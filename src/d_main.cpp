@@ -204,6 +204,7 @@ CUSTOM_CVAR (String, vid_cursor, "None", CVAR_ARCHIVE | CVAR_NOINITCALL)
 	}
 }
 
+bool wantToRestart;
 bool DrawFSHUD;				// [RH] Draw fullscreen HUD?
 TArray<FString> allwads;
 bool devparm;				// started game with -devparm
@@ -1013,6 +1014,11 @@ void D_DoomLoop ()
 			I_StartTic ();
 			D_Display ();
 			S_UpdateMusic();	// OpenAL needs this to keep the music running, thanks to a complete lack of a sane streaming implementation using callbacks. :(
+			if (wantToRestart)
+			{
+				wantToRestart = false;
+				return;
+			}
 		}
 		catch (CRecoverableError &error)
 		{
@@ -2623,40 +2629,39 @@ void D_DoomMain (void)
 			setmodeneeded = false;			// This may be set to true here, but isn't needed for a restart
 		}
 
-		try
-		{
-			D_DoomLoop ();		// never returns
-		}
-		catch (CRestartException &)
-		{
-			// Music and sound should be stopped first
-			S_StopMusic(true);
-			S_StopAllChannels ();
+		D_DoomLoop ();		// this only returns if a 'restart' CCMD is given.
 
-			M_ClearMenus();					// close menu if open
-			F_EndFinale();					// If an intermission is active, end it now
+		// 
+		// Clean up after a restart
+		//
 
-			// clean up game state
-			ST_Clear();
-			D_ErrorCleanup ();
-			P_FreeLevelData();
-			P_FreeExtraLevelData();
+		// Music and sound should be stopped first
+		S_StopMusic(true);
+		S_StopAllChannels ();
 
-			M_SaveDefaults(NULL);			// save config before the restart
+		M_ClearMenus();					// close menu if open
+		F_EndFinale();					// If an intermission is active, end it now
 
-			// delete all data that cannot be left until reinitialization
-			V_ClearFonts();					// must clear global font pointers
-			R_DeinitTranslationTables();	// some tables are initialized from outside the translation code.
-			gameinfo.~gameinfo_t();
-			new (&gameinfo) gameinfo_t;		// Reset gameinfo
-			S_Shutdown();					// free all channels and delete playlist
-			C_ClearAliases();				// CCMDs won't be reinitialized so these need to be deleted here
-			DestroyCVarsFlagged(CVAR_MOD);	// Delete any cvar left by mods
+		// clean up game state
+		ST_Clear();
+		D_ErrorCleanup ();
+		P_FreeLevelData();
+		P_FreeExtraLevelData();
 
-			GC::FullGC();					// perform one final garbage collection before deleting the class data
-			PClass::ClearRuntimeData();		// clear all runtime generated class data
-			restart++;
-		}
+		M_SaveDefaults(NULL);			// save config before the restart
+
+		// delete all data that cannot be left until reinitialization
+		V_ClearFonts();					// must clear global font pointers
+		R_DeinitTranslationTables();	// some tables are initialized from outside the translation code.
+		gameinfo.~gameinfo_t();
+		new (&gameinfo) gameinfo_t;		// Reset gameinfo
+		S_Shutdown();					// free all channels and delete playlist
+		C_ClearAliases();				// CCMDs won't be reinitialized so these need to be deleted here
+		DestroyCVarsFlagged(CVAR_MOD);	// Delete any cvar left by mods
+
+		GC::FullGC();					// clean up before taking down the object list.
+		PClass::ClearRuntimeData();		// clear all runtime generated class data
+		restart++;
 	}
 	while (1);
 }
@@ -2684,14 +2689,13 @@ UNSAFE_CCMD(restart)
 
 	if (argv.argc() > 1)
 	{
-		for(int i=1;i<argv.argc(); i++)
+		for (int i = 1; i<argv.argc(); i++)
 		{
 			Args->AppendArg(argv[i]);
 		}
 	}
 
-	// initiate the restart
-	throw CRestartException();
+	wantToRestart = true;
 }
 
 //==========================================================================
