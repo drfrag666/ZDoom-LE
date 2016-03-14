@@ -6014,8 +6014,8 @@ doplaysound:			if (funcIndex == ACSF_PlayActorSound)
 				reference = SingleActorFromTID(tid_dest, activator);
 			}
 
-			// If there is no actor to warp to, fail.
-			if (!reference)
+			// If there is no activator or actor to warp to, fail.
+			if (activator == NULL || !reference)
 				return false;
 
 			if (P_Thing_Warp(activator, reference, xofs, yofs, zofs, angle, flags, heightoffset, radiusoffset, pitch))
