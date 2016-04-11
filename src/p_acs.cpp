@@ -8625,8 +8625,11 @@ scriptwait:
 					else
 					{
 						item = activator->GiveInventoryType (type);
-						item->MaxAmount = STACK(1);
-						item->Amount = 0;
+						if (item != NULL)
+						{
+							item->MaxAmount = STACK(1);
+							item->Amount = 0;
+						}
 					}
 				}
 			}
