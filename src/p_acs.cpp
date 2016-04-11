@@ -8889,10 +8889,11 @@ scriptwait:
 			break;
 
 		case PCD_ENDTRANSLATION:
-			// This might be useful for hardware rendering, but
-			// for software it is superfluous.
-			translation->UpdateNative();
-			translation = NULL;
+			if (translation != NULL)
+			{
+				translation->UpdateNative();
+				translation = NULL;
+			}
 			break;
 
 		case PCD_SIN:
