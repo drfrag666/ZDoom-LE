@@ -1362,6 +1362,18 @@ static int CheckInventory (AActor *activator, const char *type, bool max)
 	}
 
 	const PClass *info = PClass::FindClass (type);
+
+	if (info == NULL)
+	{
+		Printf ("ACS: I don't know what '%s' is.\n", type);
+		return 0;
+	}
+	else if (!info->IsDescendantOf(RUNTIME_CLASS(AInventory)))
+	{
+		Printf ("ACS: '%s' is not an inventory item.\n", type);
+		return 0;
+	}
+
 	AInventory *item = activator->FindInventory (info);
 
 	if (max)
