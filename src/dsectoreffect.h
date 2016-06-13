@@ -68,7 +68,7 @@ class DMovingCeiling : public DMover
 {
 	DECLARE_CLASS (DMovingCeiling, DMover)
 public:
-	DMovingCeiling (sector_t *sector);
+	DMovingCeiling (sector_t *sector, bool interpolate = true);
 protected:
 	DMovingCeiling ();
 };

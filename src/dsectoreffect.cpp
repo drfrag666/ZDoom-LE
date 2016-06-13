@@ -125,11 +125,11 @@ DMovingCeiling::DMovingCeiling ()
 {
 }
 
-DMovingCeiling::DMovingCeiling (sector_t *sector)
+DMovingCeiling::DMovingCeiling (sector_t *sector, bool interpolate)
 	: DMover (sector)
 {
 	sector->ceilingdata = this;
-	interpolation = sector->SetInterpolation(sector_t::CeilingMove, true);
+	if (interpolate) interpolation = sector->SetInterpolation(sector_t::CeilingMove, true);
 }
 
 bool DMover::MoveAttached(int crush, fixed_t move, int floorOrCeiling, bool resetfailed)
