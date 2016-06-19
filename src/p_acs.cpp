@@ -8127,6 +8127,13 @@ scriptwait:
 			break;
 
 // [BC] Start ST PCD's
+		case PCD_PLAYERTEAM:
+			if ( activator && activator->player )
+				PushToStack( activator->player->userinfo.GetTeam() );
+			else
+				PushToStack( 0 );
+			break;
+
 		case PCD_PLAYERHEALTH:
 			if (activator)
 				PushToStack (activator->health);
