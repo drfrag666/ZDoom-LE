@@ -3752,12 +3752,7 @@ void FParser::SF_Resurrect()
 		mo->SetState(state);
 		mo->height = mo->GetDefault()->height;
 		mo->radius = mo->GetDefault()->radius;
-		mo->flags =  mo->GetDefault()->flags;
-		mo->flags2 = mo->GetDefault()->flags2;
-		mo->flags3 = mo->GetDefault()->flags3;
-		mo->flags4 = mo->GetDefault()->flags4;
-		mo->flags5 = mo->GetDefault()->flags5;
-		mo->health = mo->GetDefault()->health;
+		mo->Revive();
 		mo->target = NULL;
 	}
 }
