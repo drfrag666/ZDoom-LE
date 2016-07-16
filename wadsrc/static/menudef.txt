@@ -850,6 +850,12 @@ OptionValue "AltHUDLag"
 	2, "Always"
 }
 
+OptionValue "AltHUDAmmoOrder"
+{
+	0, "Image and Text"
+	1, "Text and Image"
+}
+
 OptionMenu "AltHUDOptions"
 {
 	Title "Alternative HUD"
@@ -866,6 +872,7 @@ OptionMenu "AltHUDOptions"
 	Option "Show time",								"hud_showtime", "AltHUDTime"
 	Option "Time color",							"hud_timecolor", "TextColors"
 	Option "Show network latency",					"hud_showlag", "AltHUDLag"
+	Option "Ammo display order",					"hud_ammo_order", "AltHUDAmmoOrder"
 	Slider "Red ammo display below %",				"hud_ammo_red", 0, 100, 1, 0
 	Slider "Yellow ammo display below %",			"hud_ammo_yellow", 0, 100, 1, 0
 	Slider "Red health display below",				"hud_health_red", 0, 100, 1, 0
