@@ -801,6 +801,7 @@ int P_Thing_Warp(AActor *caller, AActor *reference, fixed_t xofs, fixed_t yofs, 
 			{
 				caller->AddZ(reference->GetBobOffset());
 			}
+			P_TryMove(caller, caller->X(),caller->Y(), false);
 		}
 		return true;
 	}
