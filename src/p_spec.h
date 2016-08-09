@@ -466,13 +466,13 @@ private:
 
 	friend bool	EV_DoPlat (int tag, line_t *line, EPlatType type,
 						   int height, int speed, int delay, int lip, int change);
-	friend void EV_StopPlat (int tag);
+	friend void EV_StopPlat (int tag, bool remove);
 	friend void P_ActivateInStasis (int tag);
 };
 
 bool EV_DoPlat (int tag, line_t *line, DPlat::EPlatType type,
 				int height, int speed, int delay, int lip, int change);
-void EV_StopPlat (int tag);
+void EV_StopPlat (int tag, bool remove);
 void P_ActivateInStasis (int tag);
 
 //
@@ -685,14 +685,14 @@ protected:
 private:
 	DCeiling ();
 
-	friend bool EV_CeilingCrushStop (int tag);
+	friend bool EV_CeilingCrushStop (int tag, bool remove);
 	friend void P_ActivateInStasisCeiling (int tag);
 };
 
 bool EV_DoCeiling (DCeiling::ECeiling type, line_t *line,
 	int tag, fixed_t speed, fixed_t speed2, fixed_t height,
 	int crush, int silent, int change, bool hexencrush);
-bool EV_CeilingCrushStop (int tag);
+bool EV_CeilingCrushStop (int tag, bool remove);
 void P_ActivateInStasisCeiling (int tag);
 
 
