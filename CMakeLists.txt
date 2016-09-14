@@ -22,6 +22,11 @@ else(${CMAKE_MAJOR_VERSION} GREATER 2 OR ${CMAKE_MINOR_VERSION} GREATER 7)
 	set( NO_GENERATOR_EXPRESSIONS ON )
 endif(${CMAKE_MAJOR_VERSION} GREATER 2 OR ${CMAKE_MINOR_VERSION} GREATER 7)
 
+# Produce a warning if XP support will be missing.
+if( MSVC14 AND NOT CMAKE_GENERATOR_TOOLSET STREQUAL "v140_xp" )
+	message( WARNING "This project supports Windows XP (including XP x64), but you must set the optional toolset to v140_xp manually to have it in your build! Use -T \"v140_xp\" from the command prompt." )
+endif()
+
 # Support cross compiling
 option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
 if( FORCE_CROSSCOMPILE )
