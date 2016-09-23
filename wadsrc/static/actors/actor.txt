@@ -31,6 +31,7 @@ ACTOR Actor native //: Thinker
 	RipperLevel 0
 	RipLevelMin 0
 	RipLevelMax 0
+	StencilColor "00 00 00"
 
 	// Variables for the expression evaluator
 	// NOTE: fixed_t and angle_t are only used here to ensure proper conversion
