@@ -243,7 +243,7 @@ class CommandDrawImage : public SBarInfoCommandFlowControl
 				applyscale = false;
 			}
 			if(type == PLAYERICON)
-				texture = TexMan[statusBar->CPlayer->mo->ScoreIcon];
+				texture = TexMan(statusBar->CPlayer->mo->ScoreIcon);
 			else if(type == AMMO1)
 			{
 				AAmmo *ammo = statusBar->ammo1;
@@ -272,7 +272,7 @@ class CommandDrawImage : public SBarInfoCommandFlowControl
 			{
 				AInventory *item = statusBar->CPlayer->mo->FindInventory<ASigil>();
 				if (item != NULL)
-					texture = TexMan[item->Icon];
+					texture = TexMan(item->Icon);
 			}
 			else if(type == HEXENARMOR_ARMOR || type == HEXENARMOR_SHIELD || type == HEXENARMOR_HELM || type == HEXENARMOR_AMULET)
 			{
@@ -292,7 +292,7 @@ class CommandDrawImage : public SBarInfoCommandFlowControl
 				}
 			}
 			else if(type == INVENTORYICON)
-				texture = TexMan[sprite];
+				texture = TexMan(sprite);
 			else if(type == SELECTEDINVENTORYICON && statusBar->CPlayer->mo->InvSel != NULL)
 				texture = TexMan(statusBar->CPlayer->mo->InvSel->Icon);
 			else if(image >= 0)
@@ -314,7 +314,7 @@ class CommandDrawImage : public SBarInfoCommandFlowControl
 				spawnScaleY = FIXED2FLOAT(item->scaleY);
 			}
 			
-			texture = TexMan[icon];
+			texture = TexMan(icon);
 		}
 		
 		enum ImageType
@@ -2370,22 +2370,22 @@ class CommandDrawKeyBar : public SBarInfoCommand
 				{
 					if(!vertical)
 					{
-						statusBar->DrawGraphic(TexMan[item->Icon], x+slotOffset, y+rowOffset, block->XOffset(), block->YOffset(), block->Alpha(), block->FullScreenOffsets());
-						rowWidth = rowIconSize == -1 ? TexMan[item->Icon]->GetScaledHeight()+2 : rowIconSize;
+						statusBar->DrawGraphic(TexMan(item->Icon), x+slotOffset, y+rowOffset, block->XOffset(), block->YOffset(), block->Alpha(), block->FullScreenOffsets());
+						rowWidth = rowIconSize == -1 ? TexMan(item->Icon)->GetScaledHeight()+2 : rowIconSize;
 					}
 					else
 					{
-						statusBar->DrawGraphic(TexMan[item->Icon], x+rowOffset, y+slotOffset, block->XOffset(), block->YOffset(), block->Alpha(), block->FullScreenOffsets());
-						rowWidth = rowIconSize == -1 ? TexMan[item->Icon]->GetScaledWidth()+2 : rowIconSize;
+						statusBar->DrawGraphic(TexMan(item->Icon), x+rowOffset, y+slotOffset, block->XOffset(), block->YOffset(), block->Alpha(), block->FullScreenOffsets());
+						rowWidth = rowIconSize == -1 ? TexMan(item->Icon)->GetScaledWidth()+2 : rowIconSize;
 					}
 		
 					// If cmd.special is -1 then the slot size is auto detected
 					if(iconSize == -1)
 					{
 						if(!vertical)
-							slotOffset += (reverse ? -1 : 1) * (TexMan[item->Icon]->GetScaledWidth() + 2);
+							slotOffset += (reverse ? -1 : 1) * (TexMan(item->Icon)->GetScaledWidth() + 2);
 						else
-							slotOffset += (reverse ? -1 : 1) * (TexMan[item->Icon]->GetScaledHeight() + 2);
+							slotOffset += (reverse ? -1 : 1) * (TexMan(item->Icon)->GetScaledHeight() + 2);
 					}
 					else
 						slotOffset += (reverse ? -iconSize : iconSize);
