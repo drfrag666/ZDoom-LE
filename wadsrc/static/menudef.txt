@@ -678,8 +678,9 @@ OptionMenu "VideoOptions"
 	Slider "Brightness",				"Gamma", 0.75, 3.0, 0.05, 2
 	Option "Vertical Sync",				"vid_vsync", "OnOff"
 	Option "Rendering Interpolation",	"cl_capfps", "OffOn"
-	Slider "Blood Flash Intensity",		"blood_fade_scalar", 0.0, 1.0, 0.05, 1
-	Slider "Pickup Flash Intensity",	"pickup_fade_scalar", 0.0, 1.0, 0.05, 1
+	Slider "Blood Flash Intensity",		"blood_fade_scalar", 0.0, 1.0, 0.05, 2
+	Slider "Pickup Flash Intensity",	"pickup_fade_scalar", 0.0, 1.0, 0.05, 2
+	Slider "Underwater Blend Intensity","underwater_fade_scalar", 0.0, 1.0, 0.05, 2
 	Option "Column render mode",		"r_columnmethod", "ColumnMethods"
 	StaticText " "
 	Option "Detail mode",				"r_detail",	"DetailModes"
