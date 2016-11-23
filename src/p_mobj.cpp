@@ -4973,7 +4973,11 @@ AActor *P_SpawnMapThing (FMapThing *mthing, int position)
 	if (mthing->FloatbobPhase >= 0 && mthing->FloatbobPhase < 64) mobj->FloatBobPhase = mthing->FloatbobPhase;
 	if (mthing->gravity < 0) mobj->gravity = -mthing->gravity;
 	else if (mthing->gravity > 0) mobj->gravity = FixedMul(mobj->gravity, mthing->gravity);
-	else mobj->flags &= ~MF_NOGRAVITY;
+	else 
+	{
+		mobj->flags |= MF_NOGRAVITY;
+		mobj->gravity = 0;
+	}
 
 	// For Hexen floatbob 'compatibility' we do not really want to alter the floorz.
 	if (mobj->special1 == 0 || !(mobj->flags2 & MF2_FLOATBOB) || !(ib_compatflags & BCOMPATF_FLOATBOB))
