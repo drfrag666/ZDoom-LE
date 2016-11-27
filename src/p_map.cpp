@@ -1191,7 +1191,7 @@ bool PIT_CheckThing(AActor *thing, FCheckPosition &tm)
 			// ideally this should take the mass factor into account
 			thing->velx += tm.thing->velx;
 			thing->vely += tm.thing->vely;
-			if ((thing->velx + thing->vely) > 3 * FRACUNIT)
+			if ((abs(thing->velx) + abs(thing->vely)) > 3 * FRACUNIT)
 			{
 				int newdam;
 				damage = (tm.thing->Mass / 100) + 1;
