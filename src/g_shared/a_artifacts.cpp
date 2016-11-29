@@ -51,6 +51,7 @@ IMPLEMENT_CLASS (APowerup)
 bool APowerupGiver::Use (bool pickup)
 {
 	if (PowerupType == NULL) return true;	// item is useless
+	if (Owner == NULL) return true;
 
 	APowerup *power = static_cast<APowerup *> (Spawn (PowerupType, 0, 0, 0, NO_REPLACE));
 
