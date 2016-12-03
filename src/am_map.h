@@ -27,6 +27,7 @@ class FArchive;
 
 
 void AM_StaticInit();
+void AM_ClearColorsets();	// reset data for a restart.
 
 // Called by main loop.
 bool AM_Responder (event_t* ev, bool last);

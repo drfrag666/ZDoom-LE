@@ -461,6 +461,11 @@ static AMColorset AMMod;
 static AMColorset AMModOverlay;
 
 
+void AM_ClearColorsets()
+{
+	AMModOverlay.defined = false;
+	AMMod.defined = false;
+}
 //=============================================================================
 //
 //
