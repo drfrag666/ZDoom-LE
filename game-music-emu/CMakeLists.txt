@@ -78,6 +78,9 @@ endif( ZD_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
     SET(USE_GME_NSF 1 BOOL "Enable NES NSF music emulation")
 #endif()
 
+# [ZDoom] Set always to OFF.
+set(BUILD_SHARED_LIBS 0 BOOL "Build shared library (set to OFF for static library)")
+
 # Check for GCC "visibility" support.
 if (CMAKE_COMPILER_IS_GNUCXX)
    check_cxx_compiler_flag (-fvisibility=hidden __LIBGME_TEST_VISIBILITY)
