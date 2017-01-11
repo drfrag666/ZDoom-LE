@@ -728,7 +728,7 @@ void P_DrawRailTrail(AActor *source, const TVector3<double> &start, const TVecto
 			int spiralduration = (duration == 0) ? 35 : duration;
 
 			p->trans = 255;
-			p->ttl = duration;
+			p->ttl = spiralduration;
 			p->fade = FADEFROMTTL(spiralduration);
 			p->size = 3;
 			p->bright = fullbright;
