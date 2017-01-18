@@ -1282,6 +1282,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	vis = &tempvis;
 	vis->renderflags = owner->renderflags;
 	vis->floorclip = 0;
+	vis->sector = NULL;
 
 	vis->texturemid = MulScale16((BASEYCENTER<<FRACBITS) - sy, tex->yScale) + (tex->TopOffset << FRACBITS);
 
