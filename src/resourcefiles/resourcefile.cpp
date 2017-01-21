@@ -272,11 +272,13 @@ static CheckFunc funcs[] = { CheckWad, CheckZip, Check7Z, CheckPak, CheckGRP, Ch
 
 FResourceFile *FResourceFile::OpenResourceFile(const char *filename, FileReader *file, bool quiet)
 {
+	bool mustclose = false;
 	if (file == NULL)
 	{
 		try
 		{
 			file = new FileReader(filename);
+			mustclose = true;
 		}
 		catch (CRecoverableError &)
 		{
@@ -288,6 +290,7 @@ FResourceFile *FResourceFile::OpenResourceFile(const char *filename, FileReader 
 		FResourceFile *resfile = funcs[i](filename, file, quiet);
 		if (resfile != NULL) return resfile;
 	}
+	if (mustclose) delete file;
 	return NULL;
 }
 
