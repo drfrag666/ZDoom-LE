@@ -1561,6 +1561,8 @@ void C_ArchiveCVars (FConfigFile *f, uint32 filter)
 	}
 }
 
+EXTERN_CVAR(Bool, sv_cheats);
+
 static bool IsUnsafe(const FBaseCVar *const var)
 {
 	const bool unsafe = UnsafeExecutionContext && !(var->GetFlags() & CVAR_MOD);
@@ -1573,7 +1575,12 @@ static bool IsUnsafe(const FBaseCVar *const var)
 
 void FBaseCVar::CmdSet (const char *newval)
 {
-	if (IsUnsafe(this))
+	if ((GetFlags() & CVAR_CHEAT) && !sv_cheats)
+	{
+		Printf("sv_cheats must be true to set this console variable.\n");
+		return;
+	}
+	else if (IsUnsafe(this))
 	{
 		return;
 	}
