@@ -420,7 +420,7 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	TEXTMETRIC tm;
 	HINSTANCE inst = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 	DRAWITEMSTRUCT *drawitem;
-	CHARFORMAT2W format;
+	CHARFORMAT2 format;
 
 	switch (msg)
 	{
@@ -451,7 +451,7 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		SelectObject (hdc, oldfont);
 
 		// Create log read-only edit control
-		view = CreateWindowEx (WS_EX_NOPARENTNOTIFY, "RichEdit20W", NULL,
+		view = CreateWindowEx (WS_EX_NOPARENTNOTIFY, RICHEDIT_CLASS, NULL,
 			WS_CHILD | WS_VISIBLE | WS_VSCROLL |
 			ES_LEFT | ES_MULTILINE | WS_CLIPSIBLINGS,
 			0, 0, 0, 0,
@@ -475,8 +475,8 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		format.crTextColor = RGB(223,223,223);
 		format.bCharSet = ANSI_CHARSET;
 		format.bPitchAndFamily = FF_SWISS | VARIABLE_PITCH;
-		wcscpy(format.szFaceName, L"DejaVu Sans");	// At least I have it. :p
-		SendMessageW(view, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format);
+		strcpy(format.szFaceName, "DejaVu Sans");
+		SendMessage (view, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format);
 
 		ConWindow = view;
 		ReleaseDC (hWnd, hdc);
@@ -706,7 +706,7 @@ void ShowErrorPane(const char *text)
 		if (text != NULL)
 		{
 			MessageBox (Window, text,
-				GAMESIG " Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+				"ZDOOM 2.8.1a Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
 		}
 		return;
 	}
@@ -718,7 +718,7 @@ void ShowErrorPane(const char *text)
 	if (text != NULL)
 	{
 		char caption[100];
-		mysnprintf(caption, countof(caption), "Fatal Error - " GAMESIG " %s " X64 " (%s)", GetVersionString(), GetGitTime());
+		mysnprintf(caption, countof(caption), "Fatal Error - ZDOOM 2.8.1a");
 		SetWindowText (Window, caption);
 		ErrorIcon = CreateWindowEx (WS_EX_NOPARENTNOTIFY, "STATIC", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | SS_OWNERDRAW, 0, 0, 0, 0, Window, NULL, g_hInst, NULL);
 		if (ErrorIcon != NULL)
@@ -786,7 +786,7 @@ void ShowErrorPane(const char *text)
 		if (bRet == -1)
 		{
 			MessageBox (Window, text,
-				GAMESIG " Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+				"ZDOOM 2.8.1a Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
 			return;
 		}
 		else if (!IsDialogMessage (ErrorPane, &msg))
@@ -947,7 +947,7 @@ void DoMain (HINSTANCE hInstance)
 		
 		/* create window */
 		char caption[100];
-		mysnprintf(caption, countof(caption), "" GAMESIG " %s " X64 " (%s)", GetVersionString(), GetGitTime());
+		mysnprintf(caption, countof(caption), "ZDOOM 2.8.1a");
 		Window = CreateWindowEx(
 				WS_EX_APPWINDOW,
 				(LPCTSTR)WinClassName,

@@ -56,17 +56,9 @@ bool MPG123Decoder::open(FileReader *reader)
 {
     if(!inited)
     {
-		__try
-		{
-			if(mpg123_init() != MPG123_OK)
-				return false;
-			inited = true;
-		}
-		__except (CheckException(GetExceptionCode()))
-		{
-			// this means that the delay loaded decoder DLL was not found.
-			return false;
-		}
+        if(mpg123_init() != MPG123_OK)
+            return false;
+        inited = true;
     }
 
     Reader = reader;

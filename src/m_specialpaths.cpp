@@ -2,7 +2,7 @@
 #include <CoreServices/CoreServices.h>
 #endif
 
-#ifdef _WIN32
+#if 0
 #include <windows.h>
 #include <lmcons.h>
 #include <shlobj.h>
@@ -11,16 +11,15 @@
 
 #include "cmdlib.h"
 #include "m_misc.h"
+#include <direct.h>
 
-#if !defined(__APPLE__) && !defined(_WIN32)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "i_system.h"
-#endif
 
 #include "version.h"	// for GAMENAME
 
-#if defined(_WIN32)
+#if 0
 
 #include "i_system.h"
 
@@ -473,45 +472,20 @@ FString GetUserFile (const char *file)
 	FString path;
 	struct stat info;
 
-	path = NicePath("~/" GAME_DIR "/");
+	path = NicePath("");
 
 	if (stat (path, &info) == -1)
 	{
 		struct stat extrainfo;
 
-		// Sanity check for ~/.config
-		FString configPath = NicePath("~/.config/");
+		// Sanity check for /config
+		FString configPath = NicePath("");
 		if (stat (configPath, &extrainfo) == -1)
 		{
-			if (mkdir (configPath, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
-			{
-				I_FatalError ("Failed to create ~/.config directory:\n%s", strerror(errno));
-			}
 		}
 		else if (!S_ISDIR(extrainfo.st_mode))
 		{
-			I_FatalError ("~/.config must be a directory");
-		}
-
-		// This can be removed after a release or two
-		// Transfer the old zdoom directory to the new location
-		bool moved = false;
-		FString oldpath = NicePath("~/." GAMENAMELOWERCASE "/");
-		if (stat (oldpath, &extrainfo) != -1)
-		{
-			if (rename(oldpath, path) == -1)
-			{
-				I_Error ("Failed to move old " GAMENAMELOWERCASE " directory (%s) to new location (%s).",
-					oldpath.GetChars(), path.GetChars());
-			}
-			else
-				moved = true;
-		}
-
-		if (!moved && mkdir (path, S_IRUSR | S_IWUSR | S_IXUSR) == -1)
-		{
-			I_FatalError ("Failed to create %s directory:\n%s",
-				path.GetChars(), strerror (errno));
+			I_FatalError ("zdoom.ini must have a directory");
 		}
 	}
 	else
@@ -537,7 +511,7 @@ FString M_GetCachePath(bool create)
 {
 	// Don't use GAME_DIR and such so that ZDoom and its child ports can
 	// share the node cache.
-	FString path = NicePath("~/.config/zdoom/cache");
+	FString path = NicePath("cache");
 	if (create)
 	{
 		CreatePath(path);
@@ -570,17 +544,10 @@ FString M_GetCajunPath(const char *botfilename)
 {
 	FString path;
 
-	// Check first in ~/.config/zdoom/botfilename.
 	path = GetUserFile(botfilename);
 	if (!FileExists(path))
 	{
-		// Then check in SHARE_DIR/botfilename.
-		path = SHARE_DIR;
-		path << botfilename;
-		if (!FileExists(path))
-		{
-			path = "";
-		}
+		path = "";
 	}
 	return path;
 }
@@ -610,7 +577,7 @@ FString M_GetConfigPath(bool for_reading)
 
 FString M_GetScreenshotsPath()
 {
-	return NicePath("~/" GAME_DIR "/screenshots/");
+	return NicePath("screenshots");
 }
 
 //===========================================================================
@@ -623,7 +590,7 @@ FString M_GetScreenshotsPath()
 
 FString M_GetSavegamesPath()
 {
-	return NicePath("~/" GAME_DIR);
+	return NicePath("save");
 }
 
 #endif

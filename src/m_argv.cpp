@@ -389,14 +389,6 @@ void DArgs::CollectFiles(const char *param, const char *extension)
 		}
 	}
 
-	// Optional: Replace short path names with long path names
-#ifdef _WIN32
-	for (i = 0; i < work.Size(); ++i)
-	{
-		work[i] = I_GetLongPathName(work[i]);
-	}
-#endif
-
 	// Step 3: Add work back to Argv, as long as it's non-empty.
 	if (work.Size() > 0)
 	{

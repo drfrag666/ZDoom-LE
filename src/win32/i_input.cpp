@@ -295,8 +295,6 @@ bool GUIWndProcHook(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESU
 	case WM_RBUTTONUP:
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
-	case WM_XBUTTONDOWN:
-	case WM_XBUTTONUP:
 	case WM_MOUSEMOVE:
 		if (message >= WM_LBUTTONDOWN && message <= WM_LBUTTONDBLCLK)
 		{
@@ -309,18 +307,6 @@ bool GUIWndProcHook(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESU
 		else if (message >= WM_MBUTTONDOWN && message <= WM_MBUTTONDBLCLK)
 		{
 			ev.subtype = message - WM_MBUTTONDOWN + EV_GUI_MButtonDown;
-		}
-		else if (message >= WM_XBUTTONDOWN && message <= WM_XBUTTONUP)
-		{
-			ev.subtype = message - WM_XBUTTONDOWN + EV_GUI_BackButtonDown;
-			if (GET_XBUTTON_WPARAM(wParam) == 2)
-			{
-				ev.subtype += EV_GUI_FwdButtonDown - EV_GUI_BackButtonDown;
-			}
-			else if (GET_XBUTTON_WPARAM(wParam) != 1)
-			{
-				break;
-			}
 		}
 		else if (message == WM_MOUSEMOVE)
 		{
@@ -727,9 +713,6 @@ bool I_InitInput (void *hwnd)
 
 	Printf ("I_StartupKeyboard\n");
 	I_StartupKeyboard();
-
-	Printf ("I_StartupXInput\n");
-	I_StartupXInput();
 
 	Printf ("I_StartupRawPS2\n");
 	I_StartupRawPS2();

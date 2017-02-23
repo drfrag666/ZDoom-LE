@@ -228,9 +228,6 @@ protected:
 
 	static BOOL CALLBACK EnumCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 	static int STACK_ARGS NameSort(const void *a, const void *b);
-	static bool IsXInputDevice(const GUID *guid);
-	static bool IsXInputDeviceFast(const GUID *guid);
-	static bool IsXInputDeviceSlow(const GUID *guid);
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -1098,8 +1095,7 @@ BOOL CALLBACK FDInputJoystickManager::EnumCallback(LPCDIDEVICEINSTANCE lpddi, LP
 
 	// Do not add PS2 adapters if Raw PS2 Input was initialized.
 	// Do not add XInput devices if XInput was initialized.
-	if ((JoyDevices[INPUT_RawPS2] == NULL || !I_IsPS2Adapter(lpddi->guidProduct.Data1)) &&
-		(JoyDevices[INPUT_XInput] == NULL || !IsXInputDevice(&lpddi->guidProduct)))
+	if (JoyDevices[INPUT_RawPS2] == NULL || !I_IsPS2Adapter(lpddi->guidProduct.Data1))
 	{
 		Enumerator thisone;
 
@@ -1122,18 +1118,6 @@ BOOL CALLBACK FDInputJoystickManager::EnumCallback(LPCDIDEVICEINSTANCE lpddi, LP
 //
 //===========================================================================
 
-bool FDInputJoystickManager::IsXInputDevice(const GUID *guid)
-{
-	if (MyGetRawInputDeviceList == NULL || MyGetRawInputDeviceInfoA == NULL)
-	{
-		return IsXInputDeviceSlow(guid);
-	}
-	else
-	{
-		return IsXInputDeviceFast(guid);
-	}
-}
-
 //===========================================================================
 //
 // FDInputJoystickManager :: IsXInputDeviceSlow						STATIC
@@ -1153,97 +1137,6 @@ bool FDInputJoystickManager::IsXInputDevice(const GUID *guid)
 //
 //===========================================================================
 
-bool FDInputJoystickManager::IsXInputDeviceSlow(const GUID *guid)
-{
-	IWbemLocator *wbemlocator = NULL;
-	IEnumWbemClassObject *enumdevices = NULL;
-	IWbemClassObject *devices[20] = { 0 };
-	IWbemServices *wbemservices = NULL;
-	BSTR namespce = NULL;
-	BSTR deviceid = NULL;
-	BSTR classname = NULL;
-	DWORD returned = 0;
-	bool isxinput = false;
-	UINT device = 0;
-	VARIANT var;
-	HRESULT hr;
-
-	// Create WMI
-	hr = CoCreateInstance(CLSID_WbemLocator, NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID*)&wbemlocator);
-	if (FAILED(hr) || wbemlocator == NULL)
-		goto cleanup;
-
-	if (NULL == (namespce = SysAllocString(OLESTR("\\\\.\\root\\cimv2")))) goto cleanup;
-	if (NULL == (classname = SysAllocString(OLESTR("Win32_PNPEntity")))) goto cleanup;
-	if (NULL == (deviceid = SysAllocString(OLESTR("DeviceID")))) goto cleanup;
-
-	// Connect to WMI
-	hr = wbemlocator->ConnectServer(namespce, NULL, NULL, 0, 0, NULL, NULL, &wbemservices);
-	if (FAILED(hr) || wbemservices == NULL)
-		goto cleanup;
-
-	// Switch security level to IMPERSONATE.
-	CoSetProxyBlanket(wbemservices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
-		RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
-
-	hr = wbemservices->CreateInstanceEnum(classname, 0, NULL, &enumdevices);
-	if (FAILED(hr) || enumdevices == NULL)
-		goto cleanup;
-
-	// Loop over all devices
-	for (;;)
-	{
-		// Get 20 at a time.
-		hr = enumdevices->Next(10000, countof(devices), devices, &returned);
-		if (FAILED(hr))
-			goto cleanup;
-		if (returned == 0)
-			break;
-
-		for (device = 0; device < returned; device++)
-		{
-			// For each device, get its device ID.
-			hr = devices[device]->Get(deviceid, 0L, &var, NULL, NULL);
-			if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != NULL)
-			{
-				// Check if the device ID contains "IG_". If it does, then it's an XInput device.
-				// This information cannot be found from DirectInput.
-				if (wcsstr(var.bstrVal, L"IG_"))
-				{
-					// If it does, then get the VID/PID from var.bstrVal.
-					DWORD pid = 0, vid = 0;
-					WCHAR *strvid = wcsstr(var.bstrVal, L"VID_");
-					if (strvid && swscanf(strvid, L"VID_%4X", &vid) != 1)
-						vid = 0;
-					WCHAR *strpid = wcsstr(var.bstrVal, L"PID_");
-					if (strpid && swscanf(strpid, L"PID_%4X", &pid) != 1)
-						pid = 0;
-
-					// Compare the VID/PID to the DInput device.
-					DWORD vidpid = MAKELONG(vid, pid);
-					if (vidpid == guid->Data1)
-					{
-						isxinput = true;
-						goto cleanup;
-					}
-				}
-			}
-			SAFE_RELEASE(devices[device]);
-		}
-	}
-
-cleanup:
-	if (namespce)	SysFreeString(namespce);
-	if (deviceid)	SysFreeString(deviceid);
-	if (classname)	SysFreeString(classname);
-	for (device = 0; device < countof(devices); ++device)
-		SAFE_RELEASE(devices[device]);
-	SAFE_RELEASE(enumdevices);
-	SAFE_RELEASE(wbemlocator);
-	SAFE_RELEASE(wbemservices);
-	return isxinput;
-}
-
 //===========================================================================
 //
 // FDInputJoystickManager :: IsXInputDeviceFast						STATIC
@@ -1255,59 +1148,6 @@ cleanup:
 // (around 10,000 times faster, in fact!)
 //
 //===========================================================================
-
-bool FDInputJoystickManager::IsXInputDeviceFast(const GUID *guid)
-{
-	UINT nDevices, numDevices;
-	RAWINPUTDEVICELIST *devices;
-	UINT i;
-	bool isxinput = false;
-
-	if (MyGetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
-	{
-		return false;
-	}
-	if ((devices = (RAWINPUTDEVICELIST *)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL)
-	{
-		return false;
-	}
-	if ((numDevices = MyGetRawInputDeviceList(devices, &nDevices, sizeof(RAWINPUTDEVICELIST))) == (UINT)-1)
-	{
-		free(devices);
-		return false;
-	}
-	for (i = 0; i < numDevices; ++i)
-	{
-		// I am making the assumption here that all possible XInput devices
-		// will report themselves as generic HID devices and not as keyboards
-		// or mice.
-		if (devices[i].dwType == RIM_TYPEHID)
-		{
-			RID_DEVICE_INFO rdi;
-			UINT cbSize;
-
-			cbSize = rdi.cbSize = sizeof(rdi);
-			if ((INT)MyGetRawInputDeviceInfoA(devices[i].hDevice, RIDI_DEVICEINFO, &rdi, &cbSize) >= 0)
-			{
-				if(MAKELONG(rdi.hid.dwVendorId, rdi.hid.dwProductId) == (LONG)guid->Data1)
-				{
-					char name[256];
-					UINT namelen = countof(name);
-					UINT reslen;
-
-					reslen = MyGetRawInputDeviceInfoA(devices[i].hDevice, RIDI_DEVICENAME, name, &namelen);
-					if (reslen != (UINT)-1)
-					{
-						isxinput = (strstr(name, "IG_") != NULL);
-						break;
-					}
-				}
-			}
-		}
-	}
-	free(devices);
-	return isxinput;
-}
 
 //===========================================================================
 //

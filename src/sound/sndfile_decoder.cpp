@@ -54,25 +54,19 @@ SndFileDecoder::~SndFileDecoder()
 
 bool SndFileDecoder::open(FileReader *reader)
 {
-	__try
-	{
-		SF_VIRTUAL_IO sfio = { file_get_filelen, file_seek, file_read, file_write, file_tell };
+    SF_VIRTUAL_IO sfio = { file_get_filelen, file_seek, file_read, file_write, file_tell };
 
-		Reader = reader;
-		SndFile = sf_open_virtual(&sfio, SFM_READ, &SndInfo, this);
-		if (SndFile)
-		{
-			if (SndInfo.channels == 1 || SndInfo.channels == 2)
-				return true;
+    Reader = reader;
+    SndFile = sf_open_virtual(&sfio, SFM_READ, &SndInfo, this);
+    if(SndFile)
+    {
+        if(SndInfo.channels == 1 || SndInfo.channels == 2)
+            return true;
 
-			sf_close(SndFile);
-			SndFile = 0;
-		}
-	}
-	__except (CheckException(GetExceptionCode()))
-	{
-		// this means that the delay loaded decoder DLL was not found.
-	}
+        sf_close(SndFile);
+        SndFile = 0;
+    }
+
     return false;
 }
 

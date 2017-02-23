@@ -32,18 +32,13 @@
 **
 */
 
-#ifdef _DEBUG
-#define D3D_DEBUG_INFO
-#endif
 #define DIRECTDRAW_VERSION 0x0300
-#define DIRECT3D_VERSION 0x0900
 
 #define _WIN32_WINNT 0x0501
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mmsystem.h>
 #include <ddraw.h>
-#include <d3d9.h>
 
 // HEADER FILES ------------------------------------------------------------
 
@@ -51,7 +46,6 @@
 
 #include <windows.h>
 #include <ddraw.h>
-#include <d3d9.h>
 #include <stdio.h>
 #include <ctype.h>
 
@@ -80,7 +74,6 @@
 
 IMPLEMENT_ABSTRACT_CLASS(BaseWinFB)
 
-typedef IDirect3D9 *(WINAPI *DIRECT3DCREATE9FUNC)(UINT SDKVersion);
 typedef HRESULT (WINAPI *DIRECTDRAWCREATEFUNC)(GUID FAR *lpGUID, LPDIRECTDRAW FAR *lplpDD, IUnknown FAR *pUnkOuter);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -106,15 +99,12 @@ EXTERN_CVAR (Bool, cl_capfps)
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static HMODULE D3D9_dll;
 static HMODULE DDraw_dll;
 static UINT FPSLimitTimer;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 IDirectDraw2 *DDraw;
-IDirect3D9 *D3D;
-IDirect3DDevice9 *D3Device;
 HANDLE FPSLimitEvent;
 
 CVAR (Bool, vid_forceddraw, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
@@ -144,13 +134,10 @@ FILE *dbg;
 Win32Video::Win32Video (int parm)
 : m_Modes (NULL),
   m_IsFullscreen (false),
-  m_Adapter (D3DADAPTER_DEFAULT)
+  m_Adapter (0)
 {
 	I_SetWndProc();
-	if (!InitD3D9())
-	{
-		InitDDraw();
-	}
+	InitDDraw();
 }
 
 Win32Video::~Win32Video ()
@@ -166,89 +153,8 @@ Win32Video::~Win32Video ()
 		DDraw->Release();
 		DDraw = NULL;
 	}
-	if (D3D != NULL)
-	{
-		D3D->Release();
-		D3D = NULL;
-	}
 
 	STOPLOG;
-}
-
-bool Win32Video::InitD3D9 ()
-{
-	DIRECT3DCREATE9FUNC direct3d_create_9;
-
-	if (vid_forceddraw)
-	{
-		return false;
-	}
-
-	// Load the Direct3D 9 library.
-	if ((D3D9_dll = LoadLibraryA ("d3d9.dll")) == NULL)
-	{
-		return false;
-	}
-
-	// Obtain an IDirect3D interface.
-	if ((direct3d_create_9 = (DIRECT3DCREATE9FUNC)GetProcAddress (D3D9_dll, "Direct3DCreate9")) == NULL)
-	{
-		goto closelib;
-	}
-	if ((D3D = direct3d_create_9 (D3D_SDK_VERSION)) == NULL)
-	{
-		goto closelib;
-	}
-
-	// Select adapter.
-	m_Adapter = (vid_adapter < 1 || (UINT)vid_adapter > D3D->GetAdapterCount())
-		? D3DADAPTER_DEFAULT : (UINT)vid_adapter - 1u;
-
-	// Check that we have at least PS 1.4 available.
-	D3DCAPS9 devcaps;
-	if (FAILED(D3D->GetDeviceCaps (m_Adapter, D3DDEVTYPE_HAL, &devcaps)))
-	{
-		goto d3drelease;
-	}
-	if ((devcaps.PixelShaderVersion & 0xFFFF) < 0x104)
-	{
-		goto d3drelease;
-	}
-	if (!(devcaps.Caps2 & D3DCAPS2_DYNAMICTEXTURES))
-	{
-		goto d3drelease;
-	}
-
-	// Enumerate available display modes.
-	FreeModes ();
-	AddD3DModes (m_Adapter, D3DFMT_X8R8G8B8);
-	AddD3DModes (m_Adapter, D3DFMT_R5G6B5);
-	if (Args->CheckParm ("-2"))
-	{ // Force all modes to be pixel-doubled.
-		ScaleModes (1);
-	}
-	else if (Args->CheckParm ("-4"))
-	{ // Force all modes to be pixel-quadrupled.
-		ScaleModes (2);
-	}
-	else
-	{
-		AddLowResModes ();
-	}
-	AddLetterboxModes ();
-	if (m_Modes == NULL)
-	{ // Too bad. We didn't find any modes for D3D9. We probably won't find any
-	  // for DDraw either...
-		goto d3drelease;
-	}
-	return true;
-
-d3drelease:
-	D3D->Release();
-	D3D = NULL;
-closelib:
-	FreeLibrary (D3D9_dll);
-	return false;
 }
 
 void Win32Video::InitDDraw ()
@@ -334,12 +240,6 @@ bool Win32Video::GoFullscreen (bool yes)
 	HRESULT hr[2];
 	int count;
 
-	// FIXME: Do this right for D3D. (This function is only called by the movie player when using D3D.)
-	if (D3D != NULL)
-	{
-		return yes;
-	}
-
 	if (m_IsFullscreen == yes)
 		return yes;
 
@@ -387,48 +287,8 @@ void Win32Video::BlankForGDI ()
 
 void Win32Video::DumpAdapters()
 {
-	if (D3D == NULL)
-	{
-		Printf("Multi-monitor support requires Direct3D.\n");
-		return;
-	}
-
-	UINT num_adapters = D3D->GetAdapterCount();
-
-	for (UINT i = 0; i < num_adapters; ++i)
-	{
-		D3DADAPTER_IDENTIFIER9 ai;
-		char moreinfo[64] = "";
-
-		if (FAILED(D3D->GetAdapterIdentifier(i, 0, &ai)))
-		{
-			continue;
-		}
-		// Strip trailing whitespace from adapter description.
-		for (char *p = ai.Description + strlen(ai.Description) - 1;
-			 p >= ai.Description && isspace(*p);
-			 --p)
-		{
-			*p = '\0';
-		}
-		HMONITOR hm = D3D->GetAdapterMonitor(i);
-		MONITORINFOEX mi;
-		mi.cbSize = sizeof(mi);
-
-		TOptWin32Proc<BOOL(WINAPI*)(HMONITOR, LPMONITORINFO)> GetMonitorInfo("user32.dll", "GetMonitorInfoW");
-		assert(GetMonitorInfo != NULL); // Missing in NT4, but so is D3D
-		if (GetMonitorInfo.Call(hm, &mi))
-		{
-			mysnprintf(moreinfo, countof(moreinfo), " [%ldx%ld @ (%ld,%ld)]%s",
-				mi.rcMonitor.right - mi.rcMonitor.left,
-				mi.rcMonitor.bottom - mi.rcMonitor.top,
-				mi.rcMonitor.left, mi.rcMonitor.top,
-				mi.dwFlags & MONITORINFOF_PRIMARY ? " (Primary)" : "");
-		}
-		Printf("%s%u. %s%s\n",
-			i == m_Adapter ? TEXTCOLOR_BOLD : "",
-			i + 1, ai.Description, moreinfo);
-	}
+	Printf("Multi-monitor support requires Direct3D.\n");
+	return;
 }
 
 // Mode enumeration --------------------------------------------------------
@@ -437,21 +297,6 @@ HRESULT WINAPI Win32Video::EnumDDModesCB (LPDDSURFACEDESC desc, void *data)
 {
 	((Win32Video *)data)->AddMode (desc->dwWidth, desc->dwHeight, 8, desc->dwHeight, 0);
 	return DDENUMRET_OK;
-}
-
-void Win32Video::AddD3DModes (UINT adapter, D3DFORMAT format)
-{
-	UINT modecount, i;
-	D3DDISPLAYMODE mode;
-
-	modecount = D3D->GetAdapterModeCount (adapter, format);
-	for (i = 0; i < modecount; ++i)
-	{
-		if (D3D_OK == D3D->EnumAdapterModes (adapter, format, i, &mode))
-		{
-			AddMode (mode.Width, mode.Height, 8, mode.Height, 0);
-		}
-	}
 }
 
 //==========================================================================
@@ -660,14 +505,7 @@ DFrameBuffer *Win32Video::CreateFrameBuffer (int width, int height, bool fullscr
 		flashAmount = 0;
 	}
 
-	if (D3D != NULL)
-	{
-		fb = new D3DFB (m_Adapter, width, height, fullscreen);
-	}
-	else
-	{
-		fb = new DDrawFB (width, height, fullscreen);
-	}
+	fb = new DDrawFB (width, height, fullscreen);
 	LOG1 ("New fb created @ %p\n", fb);
 
 	// If we could not create the framebuffer, try again with slightly

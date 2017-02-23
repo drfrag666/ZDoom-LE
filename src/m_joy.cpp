@@ -18,7 +18,6 @@
 
 EXTERN_CVAR(Bool, joy_ps2raw)
 EXTERN_CVAR(Bool, joy_dinput)
-EXTERN_CVAR(Bool, joy_xinput)
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -27,7 +26,6 @@ CUSTOM_CVAR(Bool, use_joystick, false, CVAR_ARCHIVE|CVAR_GLOBALCONFIG|CVAR_NOINI
 #ifdef _WIN32
 	joy_ps2raw.Callback();
 	joy_dinput.Callback();
-	joy_xinput.Callback();
 #endif
 }
 

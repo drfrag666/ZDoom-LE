@@ -107,25 +107,15 @@ if( WIN32 )
 	set( FMOD_INC_PATH_SUFFIXES PATH_SUFFIXES inc )
 	set( FMOD_LIB_PATH_SUFFIXES PATH_SUFFIXES lib )
 	set( NASM_NAMES nasmw nasm )
-	
-	find_path( D3D_INCLUDE_DIR d3d9.h
+
+	find_path( DDRAW_INCLUDE_DIR ddraw.h
 		PATHS ENV DXSDK_DIR
 		PATH_SUFFIXES Include )
-	if( NOT D3D_INCLUDE_DIR )
-		message( SEND_ERROR "Could not find DirectX 9 header files" )
-	else( NOT D3D_INCLUDE_DIR )
-		include_directories( ${D3D_INCLUDE_DIR} )
-	endif( NOT D3D_INCLUDE_DIR )
-	
-	find_path( XINPUT_INCLUDE_DIR xinput.h
-		PATHS ENV DXSDK_DIR
-		PATH_SUFFIXES Include )
-	if( NOT XINPUT_INCLUDE_DIR )
-		message( WARNING "Could not find xinput.h. XInput will be disabled." )
-		add_definitions( -DNO_XINPUT )
-	else( NOT XINPUT_INCLUDE_DIR )
-		include_directories( ${XINPUT_INCLUDE_DIR} )
-	endif( NOT XINPUT_INCLUDE_DIR )
+	if( NOT DDRAW_INCLUDE_DIR )
+		message( SEND_ERROR "Could not find DirectX 8 header files" )
+	else( NOT DDRAW_INCLUDE_DIR )
+		include_directories( ${DDRAW_INCLUDE_DIR} )
+	endif( NOT DDRAW_INCLUDE_DIR )
 
 	find_library( DX_dxguid_LIBRARY dxguid
 		PATHS ENV DXSDK_DIR
@@ -143,7 +133,7 @@ if( WIN32 )
 	endif( NOT DX_dinput8_LIBRARY )
 
 	if( NOT DX_LIBS_FOUND )
-		message( FATAL_ERROR "Could not find DirectX 9 libraries" )
+		message( FATAL_ERROR "Could not find DirectX 8 libraries" )
 	endif( NOT DX_LIBS_FOUND )
 
 	set( ZDOOM_LIBS
@@ -158,8 +148,7 @@ if( WIN32 )
 		comdlg32
 		ws2_32
 		setupapi
-		oleaut32 
-		DelayImp )
+		oleaut32 )
 else( WIN32 )
 	if( APPLE )
 		set( FMOD_SEARCH_PATHS "/Developer/FMOD Programmers API Mac/api" )
@@ -219,8 +208,14 @@ if( NOT NO_OPENAL )
 	mark_as_advanced(CLEAR OPENAL_INCLUDE_DIR)
     if( OPENAL_INCLUDE_DIR )
         include_directories( ${OPENAL_INCLUDE_DIR} )
-    else( OPENAL_INCLUDE_DIR )
+	mark_as_advanced(CLEAR OPENAL_LIBRARY)
+	if( OPENAL_LIBRARY )
+		set( ZDOOM_LIBS ${OPENAL_LIBRARY} ${ZDOOM_LIBS} )
+	else()
 		set( NO_OPENAL ON )
+	endif()
+    else( OPENAL_INCLUDE_DIR )
+	set( NO_OPENAL ON )
     endif( OPENAL_INCLUDE_DIR )
 endif( NOT NO_OPENAL )
 
@@ -577,8 +572,6 @@ endif( NOT DYN_FLUIDSYNTH )
 # Start defining source files for ZDoom
 set( PLAT_WIN32_SOURCES
 	win32/eaxedit.cpp
-	win32/fb_d3d9.cpp
-	win32/fb_d3d9_wipe.cpp
 	win32/fb_ddraw.cpp
 	win32/hardware.cpp
 	win32/helperthread.cpp
@@ -589,7 +582,6 @@ set( PLAT_WIN32_SOURCES
 	win32/i_mouse.cpp
 	win32/i_dijoy.cpp
 	win32/i_rawps2.cpp
-	win32/i_xinput.cpp
 	win32/i_main.cpp
 	win32/i_movie.cpp
 	win32/i_system.cpp

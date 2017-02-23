@@ -34,6 +34,11 @@
 
 // HEADER FILES ------------------------------------------------------------
 
+#ifndef PBS_MARQUEE
+# define PBS_MARQUEE 0x08
+# define PBM_SETMARQUEE (WM_USER+10)
+#endif
+
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT 0x0501	// required to get the MARQUEE defines
 #include <windows.h>
