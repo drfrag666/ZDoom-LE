@@ -67,7 +67,7 @@ static void MIDIDeviceChanged(int newdev)
 #ifdef _WIN32
 UINT mididevice;
 
-CUSTOM_CVAR (Int, snd_mididevice, -1, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CUSTOM_CVAR (Int, snd_mididevice, 0, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 {
 	if (!nummididevicesset)
 		return;

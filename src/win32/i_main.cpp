@@ -343,7 +343,7 @@ void LayoutMainWindow (HWND hWnd, HWND pane)
 
 	if (DoomStartupInfo.Name.IsNotEmpty() && GameTitleWindow != NULL)
 	{
-		bannerheight = GameTitleFontHeight + 5;
+		bannerheight = GameTitleFontHeight + 2;
 		MoveWindow (GameTitleWindow, 0, 0, w, bannerheight, TRUE);
 		InvalidateRect (GameTitleWindow, NULL, FALSE);
 	}
@@ -428,11 +428,11 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		// Create game title static control
 		memset (&lf, 0, sizeof(lf));
 		hdc = GetDC (hWnd);
-		lf.lfHeight = -MulDiv(12, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		lf.lfHeight = -MulDiv(10, GetDeviceCaps(hdc, LOGPIXELSY), 72);
 		lf.lfCharSet = ANSI_CHARSET;
-		lf.lfWeight = FW_BOLD;
-		lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
-		strcpy (lf.lfFaceName, "Trebuchet MS");
+		lf.lfWeight = FW_NORMAL;
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
+		strcpy (lf.lfFaceName, "DejaVu Sans");
 		GameTitleFont = CreateFontIndirect (&lf);
 
 		oldfont = SelectObject (hdc, GetStockObject (DEFAULT_GUI_FONT));
@@ -465,7 +465,7 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendMessage (view, EM_SETREADONLY, TRUE, 0);
 		SendMessage (view, EM_EXLIMITTEXT, 0, 0x7FFFFFFE);
-		SendMessage (view, EM_SETBKGNDCOLOR, 0, RGB(70,70,70));
+		SendMessage (view, EM_SETBKGNDCOLOR, 0, RGB(20,20,20));
 		// Setup default font for the log.
 		//SendMessage (view, WM_SETFONT, (WPARAM)GetStockObject (DEFAULT_GUI_FONT), FALSE);
 		format.cbSize = sizeof(format);
@@ -566,7 +566,7 @@ LRESULT CALLBACK LConProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			drawitem = (LPDRAWITEMSTRUCT)lParam;
 
 			// This background color should match the edit control's.
-			hbr = CreateSolidBrush (RGB(70,70,70));
+			hbr = CreateSolidBrush (RGB(20,20,20));
 			FillRect (drawitem->hDC, &drawitem->rcItem, hbr);
 			DeleteObject (hbr);
 

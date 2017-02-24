@@ -267,7 +267,7 @@ IWad
 
 IWad
 {
-	Name = "The Ultimate DOOM"
+	Name = "The Ultimate DOOM Operating System v2"
 	Autoname = "doom.doom1.ultimate"
 	Game = "Doom"
 	Config = "Doom"
@@ -276,12 +276,12 @@ IWad
 	MustContain = "E1M1","E2M1","E2M2","E2M3","E2M4","E2M5","E2M6","E2M7","E2M8","E2M9",
 		          "E3M1","E3M2","E3M3","E3M4","E3M5","E3M6","E3M7","E3M8","E3M9",
 		          "DPHOOF","BFGGA0","HEADA1","CYBRA1","SPIDA1D1", "E4M2"
-	BannerColors = "54 54 54", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
 {
-	Name = "DOOM Registered"
+	Name = "DOOM Operating System v2"
 	Autoname = "doom.doom1.registered"
 	Game = "Doom"
 	Config = "Doom"
@@ -290,42 +290,42 @@ IWad
 	MustContain = "E1M1","E2M1","E2M2","E2M3","E2M4","E2M5","E2M6","E2M7","E2M8","E2M9",
 		          "E3M1","E3M2","E3M3","E3M4","E3M5","E3M6","E3M7","E3M8","E3M9",
 		          "DPHOOF","BFGGA0","HEADA1","CYBRA1","SPIDA1D1"
-	BannerColors = "54 54 54", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
 {
-	Name = "DOOM Shareware"
+	Name = "DOOM: Knee Deep in the Dead Operating System v2"
 	Game = "Doom"
 	Config = "Doom"
 	Mapinfo = "mapinfo/doom1.txt"
 	Compatibility = "Shareware", "Shorttex"
 	MustContain = "E1M1"
-	BannerColors = "54 54 54", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
 {
-	Name = "Final Doom: TNT - Evilution"
+	Name = "Final Doom: TNT - Evilution Operating System v2"
 	Autoname = "doom.doom2.tnt"
 	Game = "Doom"
 	Config = "Doom"
 	Mapinfo = "mapinfo/tnt.txt"
 	Compatibility = "Shorttex", "Stairs"
 	MustContain = "MAP01", "REDTNT2"
-	BannerColors = "a8 00 00", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
 {
-	Name = "Final Doom: Plutonia Experiment"
+	Name = "Final Doom: Plutonia Experiment Operating System v2"
 	Autoname = "doom.doom2.plutonia"
 	Game = "Doom"
 	Config = "Doom"
 	Mapinfo = "mapinfo/plutonia.txt"
 	Compatibility = "Shorttex"
 	MustContain = "MAP01", "CAMO1"
-	BannerColors = "a8 00 00", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
@@ -344,14 +344,14 @@ IWad
 // Doom 2 must be last to be checked becaude MAP01 is its only requirement
 IWad
 {
-	Name = "DOOM 2: Hell on Earth"
+	Name = "DOOM 2: Hell on Earth Operating System v2"
 	Autoname = "doom.doom2.commercial"
 	Game = "Doom"
 	Config = "Doom"
 	Mapinfo = "mapinfo/doom2.txt"
 	Compatibility = "Shorttex"
 	MustContain = "MAP01"
-	BannerColors = "a8 00 00", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 	
 
