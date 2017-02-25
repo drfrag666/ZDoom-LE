@@ -87,8 +87,8 @@ const char *GetVersionString();
 #define BASEWAD "zdoom.pk3"
 
 // More stuff that needs to be different for derivatives.
-#define GAMENAME "ZDoom"
-#define GAMENAMELOWERCASE "zdoom"
+#define GAMENAME "ZDoom LE"
+#define GAMENAMELOWERCASE "zdoom le"
 #define FORUM_URL "http://forum.zdoom.org"
 #define BUGS_FORUM_URL	"http://forum.zdoom.org/index.php?c=3"
 
