@@ -1145,7 +1145,8 @@ static bool snl_pointeron = false;
 
 void WI_initShowNextLoc ()
 {
-	if (wbs->next_ep == -1) 
+	level_info_t *info = FindLevelInfo(wbs->next, false);
+	if (info == NULL) 
 	{
 		// Last map in episode - there is no next location!
 		WI_End();
