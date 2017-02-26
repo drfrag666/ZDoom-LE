@@ -190,7 +190,7 @@ class USDFParser : public UDMFParserBase
 
 				case NAME_Special:
 					reply->ActionSpecial = CheckInt(key);
-					if (reply->ActionSpecial < 0 || reply->ActionSpecial > 255)
+					if (reply->ActionSpecial < 0)
 						reply->ActionSpecial = 0;
 					break;
 
