@@ -1977,7 +1977,7 @@ bool P_TryMove(AActor *thing, fixed_t x, fixed_t y,
 		}
 		if (!(thing->flags & MF_TELEPORT) && (!(thing->flags3 & MF3_FLOORHUGGER) || thing->flags5 & MF5_NODROPOFF))
 		{
-			if ((thing->flags & MF_MISSILE) && !(thing->flags6 & MF6_STEPMISSILE) && tm.floorz > thing->Z())
+			if ((thing->flags & MF_MISSILE) && !(thing->flags6 & MF6_STEPMISSILE) && tm.floorz > thing->Z() && !(thing->flags3 & MF3_FLOORHUGGER))
 			{ // [RH] Don't let normal missiles climb steps
 				goto pushline;
 			}
@@ -2315,7 +2315,7 @@ bool P_CheckMove(AActor *thing, fixed_t x, fixed_t y)
 			{ // too big a step up
 				return false;
 			}
-			else if ((thing->flags & MF_MISSILE) && !(thing->flags6 & MF6_STEPMISSILE) && tm.floorz > newz)
+			else if ((thing->flags & MF_MISSILE) && !(thing->flags6 & MF6_STEPMISSILE) && tm.floorz > newz && !(thing->flags3 & MF3_FLOORHUGGER))
 			{ // [RH] Don't let normal missiles climb steps
 				return false;
 			}
