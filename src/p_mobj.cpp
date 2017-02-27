@@ -2444,7 +2444,7 @@ void P_ZMovement (AActor *mo, fixed_t oldfloorz)
 					mo->velz = 0;
 					return;
 				}
-				else if (mo->flags3 & MF3_FLOORHUGGER)
+				else if ((mo->flags3 & MF3_FLOORHUGGER) && !(mo->flags5 & MF5_NODROPOFF))
 				{ // Floor huggers can go up steps
 					return;
 				}
