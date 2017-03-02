@@ -512,7 +512,7 @@ int FIWadManager::IdentifyVersion (TArray<FString> &wadfiles, const char *iwad, 
 					  "\n"
 #if defined(_WIN32)
 					  "1. Place one or more of these wads in the same directory as " GAMENAME ".\n"
-					  "2. Edit your " GAMENAMELOWERCASE "-username.ini and add the directories of your iwads\n"
+					  "2. Edit your " GAMENAMELOWERCASE ".ini and add the directories of your iwads\n"
 					  "to the list beneath [IWADSearch.Directories]");
 #elif defined(__APPLE__)
 					  "1. Place one or more of these wads in ~/Library/Application Support/" GAMENAMELOWERCASE "/\n"

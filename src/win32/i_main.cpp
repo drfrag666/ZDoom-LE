@@ -706,7 +706,7 @@ void ShowErrorPane(const char *text)
 		if (text != NULL)
 		{
 			MessageBox (Window, text,
-				"ZDOOM 2.8.1a Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+				GAMESIG " Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
 		}
 		return;
 	}
@@ -718,7 +718,7 @@ void ShowErrorPane(const char *text)
 	if (text != NULL)
 	{
 		char caption[100];
-		mysnprintf(caption, countof(caption), "Fatal Error - ZDOOM 2.8.1a");
+		mysnprintf(caption, countof(caption), "Fatal Error - " GAMESIG " 2.8.1a LE");
 		SetWindowText (Window, caption);
 		ErrorIcon = CreateWindowEx (WS_EX_NOPARENTNOTIFY, "STATIC", NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | SS_OWNERDRAW, 0, 0, 0, 0, Window, NULL, g_hInst, NULL);
 		if (ErrorIcon != NULL)
@@ -786,7 +786,7 @@ void ShowErrorPane(const char *text)
 		if (bRet == -1)
 		{
 			MessageBox (Window, text,
-				"ZDOOM 2.8.1a Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
+				GAMESIG "2.8.1a LE Fatal Error", MB_OK|MB_ICONSTOP|MB_TASKMODAL);
 			return;
 		}
 		else if (!IsDialogMessage (ErrorPane, &msg))
@@ -947,7 +947,7 @@ void DoMain (HINSTANCE hInstance)
 		
 		/* create window */
 		char caption[100];
-		mysnprintf(caption, countof(caption), "ZDOOM 2.8.1a");
+		mysnprintf(caption, countof(caption), "" GAMESIG " 2.8.1a LE");
 		Window = CreateWindowEx(
 				WS_EX_APPWINDOW,
 				(LPCTSTR)WinClassName,

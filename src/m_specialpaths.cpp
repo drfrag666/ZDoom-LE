@@ -485,7 +485,7 @@ FString GetUserFile (const char *file)
 		}
 		else if (!S_ISDIR(extrainfo.st_mode))
 		{
-			I_FatalError ("zdoom.ini must have a directory");
+			I_FatalError ("" GAMENAMELOWERCASE ".ini must have a directory");
 		}
 	}
 	else

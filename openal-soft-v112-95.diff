@@ -1,0 +1,89 @@
+From portions of openal-soft commits to this file
+
+diff -rupN openal-soft-1.12.854//Alc/alcConfig.c openal-soft-1.12.854-p//Alc/alcConfig.c
+--- openal-soft-1.12.854//Alc/alcConfig.c	2017-01-27 02:07:19 -0500
++++ openal-soft-1.12.854-p//Alc/alcConfig.c	2017-01-31 00:13:07 -0500
+@@ -19,7 +19,7 @@
+  */
+ 
+ #ifdef _WIN32
+-#ifdef __MINGW64__
++#ifdef __MINGW32__
+ #define _WIN32_IE 0x501
+ #else
+ #define _WIN32_IE 0x400
+@@ -35,10 +35,6 @@
+ 
+ #include "alMain.h"
+ 
+-#ifdef _WIN32_IE
+-#include <shlobj.h>
+-#endif
+-
+ typedef struct ConfigEntry {
+     char *key;
+     char *value;
+@@ -62,7 +58,7 @@ static void LoadConfigFromFile(FILE *f)
+ 
+     while(fgets(buffer, sizeof(buffer), f))
+     {
+-        size_t i = 0;
++        ssize_t i = 0;
+ 
+         while(isspace(buffer[i]))
+             i++;
+@@ -194,7 +190,7 @@ static void LoadConfigFromFile(FILE *f)
+             i++;
+         do {
+             i--;
+-        } while(isspace(buffer[i]));
++        } while(i >= 0 && isspace(buffer[i]));
+         buffer[++i] = 0;
+ 
+         free(ent->value);
+@@ -213,44 +209,14 @@ void ReadALConfig(void)
+     cfgCount = 1;
+ 
+ #ifdef _WIN32
+-    if(SHGetSpecialFolderPathA(NULL, buffer, CSIDL_APPDATA, FALSE) != FALSE)
+-    {
+-        size_t p = strlen(buffer);
+-        snprintf(buffer+p, sizeof(buffer)-p, "\\alsoft.ini");
+-        f = fopen(buffer, "rt");
+-        if(f)
+-        {
+-            LoadConfigFromFile(f);
+-            fclose(f);
+-        }
+-    }
+ #else
+-    f = fopen("/etc/openal/alsoft.conf", "r");
++    f = fopen("alsoft.ini", "r");
+     if(f)
+     {
+         LoadConfigFromFile(f);
+         fclose(f);
+     }
+-    if(getenv("HOME") && *(getenv("HOME")))
+-    {
+-        snprintf(buffer, sizeof(buffer), "%s/.alsoftrc", getenv("HOME"));
+-        f = fopen(buffer, "r");
+-        if(f)
+-        {
+-            LoadConfigFromFile(f);
+-            fclose(f);
+-        }
+-    }
+ #endif
+-    if(getenv("ALSOFT_CONF"))
+-    {
+-        f = fopen(getenv("ALSOFT_CONF"), "r");
+-        if(f)
+-        {
+-            LoadConfigFromFile(f);
+-            fclose(f);
+-        }
+-    }
+ }
+ 
+ void FreeALConfig(void)
