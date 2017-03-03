@@ -70,6 +70,7 @@ FRenderer *Renderer;
 
 IMPLEMENT_ABSTRACT_CLASS (DCanvas)
 IMPLEMENT_ABSTRACT_CLASS (DFrameBuffer)
+EXTERN_CVAR (Bool, fullscreen)
 
 #if defined(_DEBUG) && defined(_M_IX86)
 #define DBGBREAK	{ __asm int 3 }
@@ -1495,6 +1496,9 @@ CCMD (vid_setmode)
 	{
 		goodmode = true;
 	}
+
+	if (!fullscreen)
+		goodmode = true;
 
 	if (goodmode)
 	{
