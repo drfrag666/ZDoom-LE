@@ -37,6 +37,9 @@ BITS 32
 
 %define DoBlending_MMX	_DoBlending_MMX
 %define BestColor_MMX	_BestColor_MMX
+%define DoubleHoriz_MMX _DoubleHoriz_MMX
+%define DoubleHorizVert_MMX _DoubleHorizVert_MMX
+%define DoubleVert_ASM	_DoubleVert_ASM
 
 %endif
 
@@ -198,3 +201,182 @@ BestColor_MMX:
 		pop		ebx
 		emms
 		ret
+
+;-----------------------------------------------------------
+;
+; DoubleHoriz_MMX
+;
+; Stretches an image horizontally using MMX instructions.
+; The source image is assumed to occupy the right half
+; of the destination image.
+;
+;	height of source
+;	width of source
+;	dest pointer (at end of row)
+;	pitch
+;
+;-----------------------------------------------------------
+
+GLOBAL	DoubleHoriz_MMX
+
+DoubleHoriz_MMX:
+	mov	edx,[esp+8]	; edx = width
+	push	edi
+
+	neg	edx		; make edx negative so we can count up
+	mov	edi,[esp+16]	; edi = dest pointer
+
+	sar	edx,2		; and make edx count groups of 4 pixels
+	push	ebp
+
+	mov	ebp,edx		; ebp = # of columns remaining in this row
+	push	ebx
+
+	mov	ebx,[esp+28]	; ebx = pitch
+	mov	ecx,[esp+16]	; ecx = # of rows remaining
+
+.loop	movq		mm0,[edi+ebp*4]
+
+.loop2	movq		mm1,mm0
+	punpcklbw	mm0,mm0			; double left 4 pixels
+
+	movq		mm2,[edi+ebp*4+8]
+	punpckhbw	mm1,mm1			; double right 4 pixels
+
+	movq		[edi+ebp*8],mm0		; write left pixels
+	movq		mm0,mm2
+
+	movq		[edi+ebp*8+8],mm1	; write right pixels
+
+	add		ebp,2			; increment counter
+	jnz		.loop2			; repeat until done with this row
+
+
+	add	edi,ebx		; move edi to next row
+	dec	ecx		; decrease row counter
+
+	mov	ebp,edx		; prep ebp for next row
+	jnz	.loop		; repeat until every row is done
+
+	emms
+	pop	ebx
+	pop	ebp
+	pop	edi
+	ret
+
+;-----------------------------------------------------------
+;
+; DoubleHorizVert_MMX
+;
+; Stretches an image horizontally and vertically using
+; MMX instructions. The source image is assumed to occupy
+; the right half of the destination image and to leave
+; every other line unused for expansion.
+;
+;	height of source
+;	width of source
+;	dest pointer (at end of row)
+;	pitch
+;
+;-----------------------------------------------------------
+
+GLOBAL	DoubleHorizVert_MMX
+
+DoubleHorizVert_MMX:
+	mov	edx,[esp+8]	; edx = width
+	push	edi
+
+	neg	edx		; make edx negative so we can count up
+	mov	edi,[esp+16]	; edi = dest pointer
+
+	sar	edx,2		; and make edx count groups of 4 pixels
+	push	ebp
+
+	mov	ebp,edx		; ebp = # of columns remaining in this row
+	push	ebx
+
+	mov	ebx,[esp+28]	; ebx = pitch
+	mov	ecx,[esp+16]	; ecx = # of rows remaining
+
+	push	esi
+	lea	esi,[edi+ebx]
+
+.loop	movq		mm0,[edi+ebp*4]		; get 8 pixels
+
+	movq		mm1,mm0
+	punpcklbw	mm0,mm0			; double left 4
+
+	punpckhbw	mm1,mm1			; double right 4
+	add		ebp,2			; increment counter
+
+	movq		[edi+ebp*8-16],mm0	; write them back out
+
+	movq		[edi+ebp*8-8],mm1
+
+	movq		[esi+ebp*8-16],mm0
+
+	movq		[esi+ebp*8-8],mm1
+
+	jnz		.loop			; repeat until done with this row
+
+	lea	edi,[edi+ebx*2]	; move edi and esi to next row
+	lea	esi,[esi+ebx*2]
+
+	dec	ecx		; decrease row counter
+	mov	ebp,edx		; prep ebp for next row
+
+	jnz	.loop		; repeat until every row is done
+
+	emms
+	pop	esi
+	pop	ebx
+	pop	ebp
+	pop	edi
+	ret
+
+;-----------------------------------------------------------
+;
+; DoubleVert_ASM
+;
+; Stretches an image vertically using regular x86
+; instructions. The source image should be interleaved.
+;
+;	height of source
+;	width of source
+;	source/dest pointer
+;	pitch
+;
+;-----------------------------------------------------------
+
+GLOBAL	DoubleVert_ASM
+
+DoubleVert_ASM:
+	mov	edx,[esp+16]	; edx = pitch
+	mov	eax,[esp+4]	; eax = # of rows left
+
+	push	esi
+	mov	esi,[esp+16]
+
+	push	edi
+	lea	edi,[esi+edx]
+
+	shl	edx,1		; edx = pitch*2
+	mov	ecx,[esp+16]
+
+	sub	edx,ecx		; edx = dist from end of one line to start of next
+	shr	ecx,2
+
+.loop	rep movsd
+	
+	mov	ecx,[esp+16]
+	add	esi,edx
+
+	add	edi,edx
+	shr	ecx,2
+
+	dec	eax
+	jnz	.loop
+
+	pop	edi
+	pop	esi
+	ret

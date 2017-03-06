@@ -3030,8 +3030,8 @@ void AM_Drawer ()
 	{
 		f_x = viewwindowx;
 		f_y = viewwindowy;
-		f_w = viewwidth;
-		f_h = viewheight;
+		f_w = realviewwidth;
+		f_h = realviewheight;
 		f_p = screen->GetPitch ();
 	}
 	AM_activateNewScale();

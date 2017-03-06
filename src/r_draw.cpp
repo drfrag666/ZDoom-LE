@@ -52,7 +52,7 @@ extern	int		ST_Y;
 
 //
 // All drawing to the view buffer is accomplished in this file.
-// The other refresh files only know about ccordinates,
+// The other refresh files only know about coordinates,
 //	not the architecture of the frame buffer.
 // Conveniently, the frame buffer is a linear one,
 //	and we need only the base address,
@@ -66,6 +66,19 @@ int				ylookup[MAXHEIGHT];
 BYTE			*dc_destorg;
 }
 int 			scaledviewwidth;
+
+extern "C" {
+int				realviewwidth;		// [RH] Physical width of view window
+int				realviewheight;		// [RH] Physical height of view window
+int				detailxshift;		// [RH] X shift for horizontal detail level
+int				detailyshift;		// [RH] Y shift for vertical detail level
+}
+
+#ifdef X86_ASM
+extern "C" void STACK_ARGS DoubleHoriz_MMX (int height, int width, BYTE *dest, int pitch);
+extern "C" void STACK_ARGS DoubleHorizVert_MMX (int height, int width, BYTE *dest, int pitch);
+extern "C" void STACK_ARGS DoubleVert_ASM (int height, int width, BYTE *dest, int pitch);
+#endif
 
 // [RH] Pointers to the different column drawers.
 //		These get changed depending on the current
@@ -116,6 +129,8 @@ const BYTE*		bufplce[4];
 // just for profiling 
 int 			dccount;
 }
+
+cycle_t			DetailDoubleCycles;
 
 int dc_fillcolor;
 BYTE *dc_translation;
@@ -2164,6 +2179,132 @@ const BYTE *R_GetColumn (FTexture *tex, int col)
 	return tex->GetColumn (col, NULL);
 }
 
+
+// [RH] Double pixels in the view window horizontally
+//		and/or vertically (or not at all).
+void R_DetailDouble ()
+{
+	if (!viewactive) return;
+	DetailDoubleCycles.Reset();
+	DetailDoubleCycles.Clock();
+
+	switch ((detailxshift << 1) | detailyshift)
+	{
+	case 1:		// y-double
+#ifdef X86_ASM
+		DoubleVert_ASM (viewheight, viewwidth, dc_destorg, RenderTarget->GetPitch());
+#else
+		{
+			int rowsize = realviewwidth;
+			int pitch = RenderTarget->GetPitch();
+			int y;
+			BYTE *line;
+
+			line = dc_destorg;
+			for (y = viewheight; y != 0; --y, line += pitch<<1)
+			{
+				memcpy (line+pitch, line, rowsize);
+			}
+		}
+#endif
+		break;
+
+	case 2:		// x-double
+#ifdef X86_ASM
+		if (CPU.bMMX && (viewwidth&15)==0)
+		{
+			DoubleHoriz_MMX (viewheight, viewwidth, dc_destorg+viewwidth, RenderTarget->GetPitch());
+		}
+		else
+#endif
+		{
+			int rowsize = viewwidth;
+			int pitch = RenderTarget->GetPitch();
+			int y,x;
+			BYTE *linefrom, *lineto;
+
+			linefrom = dc_destorg;
+			for (y = viewheight; y != 0; --y, linefrom += pitch)
+			{
+				lineto = linefrom - viewwidth;
+				for (x = 0; x < rowsize; ++x)
+				{
+					BYTE c = linefrom[x];
+					lineto[x*2] = c;
+					lineto[x*2+1] = c;
+				}
+			}
+		}
+		break;
+
+	case 3:		// x- and y-double
+#ifdef X86_ASM
+		if (CPU.bMMX && (viewwidth&15)==0 && 0)
+		{
+			DoubleHorizVert_MMX (viewheight, viewwidth, dc_destorg+viewwidth, RenderTarget->GetPitch());
+		}
+		else
+#endif
+		{
+			int rowsize = viewwidth;
+			int realpitch = RenderTarget->GetPitch();
+			int pitch = realpitch << 1;
+			int y,x;
+			BYTE *linefrom, *lineto;
+
+			linefrom = dc_destorg;
+			for (y = viewheight; y != 0; --y, linefrom += pitch)
+			{
+				lineto = linefrom - viewwidth;
+				for (x = 0; x < rowsize; ++x)
+				{
+					BYTE c = linefrom[x];
+					lineto[x*2] = c;
+					lineto[x*2+1] = c;
+					lineto[x*2+realpitch] = c;
+					lineto[x*2+realpitch+1] = c;
+				}
+			}
+		}
+		break;
+
+	case 5:		// x-quad and y-double placeholder
+		{
+			int rowsize = viewwidth;
+			int realpitch = RenderTarget->GetPitch();
+			int pitch = realpitch << 1;
+			int y,x;
+			BYTE *linefrom, *lineto;
+
+			linefrom = dc_destorg;
+			for (y = viewheight; y != 0; --y, linefrom += pitch)
+			{
+				lineto = linefrom - viewwidth;
+				for (x = 0; x < rowsize; ++x)
+				{
+					BYTE c = linefrom[x];
+					lineto[x*4] = c;
+					lineto[x*4+1] = c;
+					lineto[x*4+2] = c;
+					lineto[x*4+3] = c;
+					lineto[x*4+realpitch] = c;
+					lineto[x*4+realpitch+1] = c;
+					lineto[x*4+realpitch+2] = c;
+					lineto[x*4+realpitch+3] = c;
+				}
+			}
+		}
+		break;
+	}	
+	DetailDoubleCycles.Unclock();
+}
+
+ADD_STAT(detail)
+{
+	FString out;
+	out.Format ("doubling = %04.1f ms", DetailDoubleCycles.TimeMS());
+	return out;
+}
 
 // [RH] Initialize the column drawer pointers
 void R_InitColumnDrawers ()

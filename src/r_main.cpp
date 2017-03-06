@@ -146,6 +146,8 @@ angle_t 		xtoviewangle[MAXWIDTH+1];
 bool			foggy;			// [RH] ignore extralight and fullbright?
 int				r_actualextralight;
 
+extern int setdetail; // Defined in r_utility.cpp
+
 void (*colfunc) (void);
 void (*basecolfunc) (void);
 void (*fuzzcolfunc) (void);
@@ -275,8 +277,8 @@ void R_SetVisibility (float vis)
 	else
 		r_WallVisibility = r_BaseVisibility;
 
-	r_WallVisibility = FixedMul (Scale (InvZtoScale, SCREENWIDTH*BaseRatioSizes[WidescreenRatio][1],
-		viewwidth*SCREENHEIGHT*3), FixedMul (r_WallVisibility, FocalTangent));
+	r_WallVisibility = FixedMul (Scale (InvZtoScale, SCREENWIDTH*(BaseRatioSizes[WidescreenRatio][1]<<detailyshift),
+		(viewwidth<<detailxshift)*SCREENHEIGHT*3), FixedMul (r_WallVisibility, FocalTangent));
 
 	// Prevent overflow on floors/ceilings. Note that the calculation of
 	// MaxVisForFloor means that planes less than two units from the player's
@@ -334,6 +336,38 @@ CCMD (r_visibility)
 
 //==========================================================================
 //
+// CVAR r_detail
+//
+// Selects a pixel doubling mode
+//
+//==========================================================================
+
+CUSTOM_CVAR (Int, r_detail, 0, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+{
+	static bool badrecovery = false;
+
+	if (badrecovery)
+	{
+		badrecovery = false;
+		return;
+	}
+
+	if (self < 0 || self > 3)
+	{
+		Printf ("Bad detail mode. (Use 0-3)\n");
+		badrecovery = true;
+		self = (detailyshift << 1) | detailxshift;
+		return;
+	}
+
+	setdetail = self;
+	setsizeneeded = true;
+}
+
+void R_SetDetail (int detail);
+
+//==========================================================================
+//
 // R_SetWindow
 //
 //==========================================================================
@@ -341,6 +375,12 @@ CCMD (r_visibility)
 void R_SWRSetWindow(int windowSize, int fullWidth, int fullHeight, int stHeight, int trueratio)
 {
 	int virtheight, virtwidth, virtwidth2, virtheight2;
+
+	viewwidth = realviewwidth >> detailxshift;
+	viewheight = realviewheight >> detailyshift;
+	fuzzviewheight = viewheight - 2;	// Maximum row the fuzzer can draw to
+	freelookviewheight >>= detailyshift;
+	halfviewwidth = (viewwidth >> 1) - 1;
 
 	if (!bRenderingToCanvas)
 	{ // Set r_viewsize cvar to reflect the current view size
@@ -352,15 +392,14 @@ void R_SWRSetWindow(int windowSize, int fullWidth, int fullHeight, int stHeight,
 		r_viewsize.ForceSet (value, CVAR_String);
 	}
 
-	fuzzviewheight = viewheight - 2;	// Maximum row the fuzzer can draw to
-	halfviewwidth = (viewwidth >> 1) - 1;
-
 	lastcenteryfrac = 1<<30;
+	centery = viewheight/2;
+	centerx = viewwidth/2;
 	centerxfrac = centerx<<FRACBITS;
 	centeryfrac = centery<<FRACBITS;
 
-	virtwidth = virtwidth2 = fullWidth;
-	virtheight = virtheight2 = fullHeight;
+	virtwidth = virtwidth2 = fullWidth >> detailxshift;
+	virtheight = virtheight2 = fullHeight >> detailyshift;
 
 	if (Is54Aspect(trueratio))
 	{
@@ -397,8 +436,8 @@ void R_SWRSetWindow(int windowSize, int fullWidth, int fullHeight, int stHeight,
 
 	R_InitTextureMapping ();
 
-	MaxVisForWall = FixedMul (Scale (InvZtoScale, SCREENWIDTH*r_Yaspect,
-		viewwidth*SCREENHEIGHT), FocalTangent);
+	MaxVisForWall = FixedMul (Scale (InvZtoScale, SCREENWIDTH*(r_Yaspect<<detailyshift),
+		(viewwidth<<detailxshift)*SCREENHEIGHT), FocalTangent);
 	MaxVisForWall = FixedDiv (0x7fff0000, MaxVisForWall);
 	MaxVisForFloor = Scale (FixedDiv (0x7fff0000, viewheight<<(FRACBITS-2)), FocalLengthY, 160*FRACUNIT);
 
@@ -422,6 +461,7 @@ CUSTOM_CVAR (Int, r_columnmethod, 1, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 	}
 	else
 	{ // Trigger the change
+		r_detail.Callback ();
 		setsizeneeded = true;
 	}
 }
@@ -706,13 +746,22 @@ void R_EnterMirror (drawseg_t *ds, int depth)
 //
 //==========================================================================
 
-void R_SetupBuffer ()
+void R_SetupBuffer (bool inview)
 {
 	static BYTE *lastbuff = NULL;
 
 	int pitch = RenderTarget->GetPitch();
 	BYTE *lineptr = RenderTarget->GetBuffer() + viewwindowy*pitch + viewwindowx;
 
+	if (inview)
+	{
+		pitch <<= detailyshift;
+	}
+	if (detailxshift)
+	{
+		lineptr += viewwidth;
+	}
+	
 	if (dc_pitch != pitch || lineptr != lastbuff)
 	{
 		if (dc_pitch != pitch)
@@ -747,7 +796,7 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 	fakeActive = 0; // kg3D - reset fake floor indicator
 	R_3D_ResetClip(); // reset clips (floor/ceiling)
 
-	R_SetupBuffer ();
+	R_SetupBuffer (true);
 	R_SetupFrame (actor);
 
 	// Clear buffers.
@@ -829,7 +878,15 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 	}
 	WallMirrors.Clear ();
 	interpolator.RestoreInterpolations ();
-	R_SetupBuffer ();
+
+	// If there is vertical doubling, and the view window is not an even height,
+	// draw a black line at the bottom of the view window.
+	if (detailyshift && viewwindowy == 0 && (realviewheight & 1))
+	{
+		screen->Clear (0, realviewheight-1, realviewwidth, realviewheight, 0, 0);
+	}
+
+	R_SetupBuffer (false);
 
 	// If we don't want shadered colormaps, NULL it now so that the
 	// copy to the screen does not use a special colormap shader.
@@ -850,12 +907,15 @@ void R_RenderActorView (AActor *actor, bool dontmaplines)
 void R_RenderViewToCanvas (AActor *actor, DCanvas *canvas,
 	int x, int y, int width, int height, bool dontmaplines)
 {
+	const int saveddetail = detailxshift | (detailyshift << 1);
 	const bool savedviewactive = viewactive;
 
-	viewwidth = width;
+	detailxshift = detailyshift = 0;
+	realviewwidth = viewwidth = width;
 	RenderTarget = canvas;
 	bRenderingToCanvas = true;
 
+	R_SetDetail (0);
 	R_SetWindow (12, width, height, height);
 	viewwindowx = x;
 	viewwindowy = y;
@@ -865,9 +925,10 @@ void R_RenderViewToCanvas (AActor *actor, DCanvas *canvas,
 
 	RenderTarget = screen;
 	bRenderingToCanvas = false;
+	R_SetDetail (saveddetail);
 	R_ExecuteSetViewSize ();
 	screen->Lock (true);
-	R_SetupBuffer ();
+	R_SetupBuffer (false);
 	screen->Unlock ();
 	viewactive = savedviewactive;
 }

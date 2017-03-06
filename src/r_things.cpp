@@ -124,6 +124,7 @@ short			screenheightarray[MAXWIDTH];
 
 EXTERN_CVAR (Bool, r_drawplayersprites)
 EXTERN_CVAR (Bool, r_drawvoxels)
+EXTERN_CVAR (Int, r_detail)
 
 //
 // INITIALIZATION FUNCTIONS
@@ -1224,15 +1225,21 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	// calculate edges of the shape
 	tx = sx-((320/2)<<FRACBITS);
 
-	tx -= tex->GetScaledLeftOffset() << FRACBITS;
-	x1 = (centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS;
+	tx -= tex->GetScaledLeftOffset() << FRACBITS;	
+	if (r_detail == 0 || r_detail == 2)
+		x1 = (centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS;
+	else
+		x1 = (centerxfrac + FixedMul (tx, pspritexscale/2)) >>FRACBITS;
 
 	// off the right side
 	if (x1 > viewwidth)
 		return; 
 
 	tx += tex->GetScaledWidth() << FRACBITS;
-	x2 = ((centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS);
+	if (r_detail == 0 || r_detail == 2)
+		x2 = (centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS;
+	else
+		x2 = (centerxfrac + FixedMul (tx, pspritexscale/2)) >>FRACBITS;
 
 	// off the left side
 	if (x2 <= 0)
@@ -1246,7 +1253,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	vis->texturemid = MulScale16((BASEYCENTER<<FRACBITS) - sy, tex->yScale) + (tex->TopOffset << FRACBITS);
 
 	if (camera->player && (RenderTarget != screen ||
-		viewheight == RenderTarget->GetHeight() ||
+		realviewheight == RenderTarget->GetHeight() ||
 		(RenderTarget->GetWidth() > 320 && !st_scale)))
 	{	// Adjust PSprite for fullscreen views
 		AWeapon *weapon = NULL;
@@ -1256,7 +1263,7 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 		}
 		if (pspnum <= ps_flash && weapon != NULL && weapon->YAdjust != 0)
 		{
-			if (RenderTarget != screen || viewheight == RenderTarget->GetHeight())
+			if (RenderTarget != screen || realviewheight == RenderTarget->GetHeight())
 			{
 				vis->texturemid -= weapon->YAdjust;
 			}
@@ -1274,19 +1281,28 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	vis->x1 = x1 < 0 ? 0 : x1;
 	vis->x2 = x2 >= viewwidth ? viewwidth : x2;
 	vis->xscale = DivScale16(pspritexscale, tex->xScale);
-	vis->yscale = DivScale16(pspriteyscale, tex->yScale);
+	if (r_detail == 0 || r_detail == 2)
+		vis->yscale = DivScale16(pspriteyscale, tex->yScale);
+	else
+		vis->yscale = DivScale16(pspriteyscale/2, tex->yScale);
 	vis->Translation = 0;		// [RH] Use default colors
 	vis->pic = tex;
 	vis->ColormapNum = 0;
 
 	if (flip)
 	{
-		vis->xiscale = -MulScale16(pspritexiscale, tex->xScale);
+		if (r_detail == 0 || r_detail == 2)
+			vis->xiscale = -MulScale16(pspritexiscale, tex->xScale);
+		else
+			vis->xiscale = -MulScale16(pspritexiscale*2, tex->xScale);
 		vis->startfrac = (tex->GetWidth() << FRACBITS) - 1;
 	}
 	else
 	{
-		vis->xiscale = MulScale16(pspritexiscale, tex->xScale);
+		if (r_detail == 0 || r_detail == 2)
+			vis->xiscale = MulScale16(pspritexiscale, tex->xScale);
+		else
+			vis->xiscale = MulScale16(pspritexiscale*2, tex->xScale);
 		vis->startfrac = 0;
 	}
 
@@ -2514,7 +2530,7 @@ void R_DrawParticle (vissprite_t *vis)
 		fg = fg2rgb[color];
 	}
 
-	spacing = RenderTarget->GetPitch() - countbase;
+	spacing = (RenderTarget->GetPitch()<<detailyshift) - countbase;
 	dest = ylookup[yl] + x1 + dc_destorg;
 
 	do

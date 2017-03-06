@@ -109,6 +109,7 @@ void FSoftwareRenderer::PrecacheTexture(FTexture *tex, int cache)
 void FSoftwareRenderer::RenderView(player_t *player)
 {
 	R_RenderActorView (player->mo);
+	R_DetailDouble ();		// [RH] Apply detail mode expansion
 	// [RH] Let cameras draw onto textures that were visible this frame.
 	FCanvasTextureInfo::UpdateAll ();
 }
@@ -188,7 +189,7 @@ void FSoftwareRenderer::OnModeSet ()
 
 	RenderTarget = screen;
 	screen->Lock (true);
-	R_SetupBuffer ();
+	R_SetupBuffer (false);
 	screen->Unlock ();
 }
 

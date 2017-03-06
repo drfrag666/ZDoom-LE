@@ -762,7 +762,7 @@ void D_Display ()
 				StatusBar->BlendView (blend);
 			}
 			screen->SetBlendingRect(viewwindowx, viewwindowy,
-				viewwindowx + viewwidth, viewwindowy + viewheight);
+				viewwindowx + realviewwidth, viewwindowy + realviewheight);
 
 			Renderer->RenderView(&players[consoleplayer]);
 
@@ -777,9 +777,9 @@ void D_Display ()
 			if (automapactive)
 			{
 				int saved_ST_Y = ST_Y;
-				if (hud_althud && viewheight == SCREENHEIGHT)
+				if (hud_althud && realviewheight == SCREENHEIGHT)
 				{
-					ST_Y = viewheight;
+					ST_Y = realviewheight;
 				}
 				AM_Drawer ();
 				ST_Y = saved_ST_Y;
@@ -789,7 +789,7 @@ void D_Display ()
 				V_RefreshViewBorder ();
 			}
 
-			if (hud_althud && viewheight == SCREENHEIGHT && screenblocks > 10)
+			if (hud_althud && realviewheight == SCREENHEIGHT && screenblocks > 10)
 			{
 				StatusBar->DrawBottomStuff (HUD_AltHud);
 				if (DrawFSHUD || automapactive) DrawHUD();
@@ -797,7 +797,7 @@ void D_Display ()
 				StatusBar->DrawTopStuff (HUD_AltHud);
 			}
 			else 
-			if (viewheight == SCREENHEIGHT && viewactive && screenblocks > 10)
+			if (realviewheight == SCREENHEIGHT && viewactive && screenblocks > 10)
 			{
 				EHudState state = DrawFSHUD ? HUD_Fullscreen : HUD_None;
 				StatusBar->DrawBottomStuff (state);

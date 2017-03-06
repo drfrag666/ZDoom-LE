@@ -34,7 +34,9 @@
 //
 
 extern "C" int			viewwidth;
+extern "C" int			realviewwidth;
 extern "C" int			viewheight;
+extern "C" int			realviewheight;
 
 //
 // Lookup tables for map data.

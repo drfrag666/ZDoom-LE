@@ -257,6 +257,9 @@ extern FDynamicColormap ShadeFakeColormap[16];
 extern BYTE identitymap[256];
 extern BYTE *dc_translation;
 
+// [RH] Double view pixels by detail mode
+void R_DetailDouble (void);
+
 // [RH] Added for muliresolution support
 void R_InitShadeMaps();
 void R_InitFuzzTable (int fuzzoff);

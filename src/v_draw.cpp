@@ -1499,17 +1499,17 @@ static void V_DrawViewBorder (void)
 		ST_SetNeedRefresh();
 	}
 
-	if (viewwidth == SCREENWIDTH)
+	if (realviewwidth == SCREENWIDTH)
 	{
 		return;
 	}
 
 	V_DrawBorder (0, 0, SCREENWIDTH, viewwindowy);
-	V_DrawBorder (0, viewwindowy, viewwindowx, viewheight + viewwindowy);
-	V_DrawBorder (viewwindowx + viewwidth, viewwindowy, SCREENWIDTH, viewheight + viewwindowy);
-	V_DrawBorder (0, viewwindowy + viewheight, SCREENWIDTH, ST_Y);
+	V_DrawBorder (0, viewwindowy, viewwindowx, realviewheight + viewwindowy);
+	V_DrawBorder (viewwindowx + realviewwidth, viewwindowy, SCREENWIDTH, realviewheight + viewwindowy);
+	V_DrawBorder (0, viewwindowy + realviewheight, SCREENWIDTH, ST_Y);
 
-	V_DrawFrame (viewwindowx, viewwindowy, viewwidth, viewheight);
+	V_DrawFrame (viewwindowx, viewwindowy, realviewwidth, realviewheight);
 	V_MarkRect (0, 0, SCREENWIDTH, ST_Y);
 }
 
@@ -1526,7 +1526,7 @@ static void V_DrawTopBorder ()
 	FTexture *p;
 	int offset;
 
-	if (viewwidth == SCREENWIDTH)
+	if (realviewwidth == SCREENWIDTH)
 		return;
 
 	offset = gameinfo.Border.offset;
@@ -1534,24 +1534,24 @@ static void V_DrawTopBorder ()
 	if (viewwindowy < 34)
 	{
 		V_DrawBorder (0, 0, viewwindowx, 34);
-		V_DrawBorder (viewwindowx, 0, viewwindowx + viewwidth, viewwindowy);
-		V_DrawBorder (viewwindowx + viewwidth, 0, SCREENWIDTH, 34);
+		V_DrawBorder (viewwindowx, 0, viewwindowx + realviewwidth, viewwindowy);
+		V_DrawBorder (viewwindowx + realviewwidth, 0, SCREENWIDTH, 34);
 		p = TexMan(gameinfo.Border.t);
 		screen->FlatFill(viewwindowx, viewwindowy - p->GetHeight(),
-						 viewwindowx + viewwidth, viewwindowy, p, true);
+						 viewwindowx + realviewwidth, viewwindowy, p, true);
 
 		p = TexMan(gameinfo.Border.l);
 		screen->FlatFill(viewwindowx - p->GetWidth(), viewwindowy,
 						 viewwindowx, 35, p, true);
 		p = TexMan(gameinfo.Border.r);
-		screen->FlatFill(viewwindowx + viewwidth, viewwindowy,
-						 viewwindowx + viewwidth + p->GetWidth(), 35, p, true);
+		screen->FlatFill(viewwindowx + realviewwidth, viewwindowy,
+						 viewwindowx + realviewwidth + p->GetWidth(), 35, p, true);
 
 		p = TexMan(gameinfo.Border.tl);
 		screen->DrawTexture (p, viewwindowx - offset, viewwindowy - offset, TAG_DONE);
 
 		p = TexMan(gameinfo.Border.tr);
-		screen->DrawTexture (p, viewwindowx + viewwidth, viewwindowy - offset, TAG_DONE);
+		screen->DrawTexture (p, viewwindowx + realviewwidth, viewwindowy - offset, TAG_DONE);
 	}
 	else
 	{

@@ -594,6 +594,14 @@ OptionMenu "JoystickConfigMenu"
 //
 //-------------------------------------------------------------------------------------------
 
+OptionValue DetailModes 
+{
+	0.0, "High"
+	1.0, "Double Horizontally"
+	2.0, "Double Vertically"
+	3.0, "Double Horiz and Vert"
+}
+
 OptionValue ColumnMethods 
 {
 	0.0, "Original"
@@ -661,7 +669,8 @@ OptionMenu "VideoOptions"
 	Option "Vertical Sync",				"vid_vsync", "OnOff"
 	Option "Rendering Interpolation",	"cl_capfps", "OffOn"
 	Option "Column render mode",		"r_columnmethod", "ColumnMethods"
-
+    Option "Detail mode",				"r_detail",		  "DetailModes"
+	
 	StaticText " "
 	Option "Screen wipe style",			"wipetype", "Wipes"
 

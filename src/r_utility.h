@@ -19,6 +19,10 @@ extern int				viewpitch;
 extern "C" int			centerx, centerxwide;
 extern "C" int			centery;
 
+// [RH] New detail modes
+extern "C" int			detailxshift;
+extern "C" int			detailyshift;
+
 extern int				setblocks;
 
 extern fixed_t			viewtancos;
