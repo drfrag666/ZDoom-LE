@@ -2057,7 +2057,7 @@ FString G_BuildSaveName (const char *prefix, int slot)
 
 CVAR (Int, autosavenum, 0, CVAR_NOSET|CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 static int nextautosave = -1;
-CVAR (Int, disableautosave, 0, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CVAR (Int, disableautosave, 1, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CUSTOM_CVAR (Int, autosavecount, 4, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 {
 	if (self < 0)

@@ -139,6 +139,7 @@ FDynamicColormap ShadeFakeColormap[16];
 BYTE identitymap[256];
 
 EXTERN_CVAR (Int, r_columnmethod)
+EXTERN_CVAR (Int, r_detail)
 
 
 void R_InitShadeMaps()
@@ -2188,9 +2189,9 @@ void R_DetailDouble ()
 	DetailDoubleCycles.Reset();
 	DetailDoubleCycles.Clock();
 
-	switch ((detailxshift << 1) | detailyshift)
+	switch (r_detail) // (detailxshift << 1) | detailyshift
 	{
-	case 1:		// y-double
+	case 2:		// y-double
 #ifdef X86_ASM
 		DoubleVert_ASM (viewheight, viewwidth, dc_destorg, RenderTarget->GetPitch());
 #else
@@ -2209,7 +2210,7 @@ void R_DetailDouble ()
 #endif
 		break;
 
-	case 2:		// x-double
+	case 1:		// x-double
 #ifdef X86_ASM
 		if (CPU.bMMX && (viewwidth&15)==0)
 		{
@@ -2268,7 +2269,7 @@ void R_DetailDouble ()
 		}
 		break;
 
-	case 5:		// x-quad and y-double placeholder
+	case 4:		// x-quad and y-double
 		{
 			int rowsize = viewwidth;
 			int realpitch = RenderTarget->GetPitch();
@@ -2280,17 +2281,17 @@ void R_DetailDouble ()
 			for (y = viewheight; y != 0; --y, linefrom += pitch)
 			{
 				lineto = linefrom - viewwidth;
-				for (x = 0; x < rowsize; ++x)
+				for (x = 0; x < rowsize; x = x+2)
 				{
 					BYTE c = linefrom[x];
-					lineto[x*4] = c;
-					lineto[x*4+1] = c;
-					lineto[x*4+2] = c;
-					lineto[x*4+3] = c;
-					lineto[x*4+realpitch] = c;
-					lineto[x*4+realpitch+1] = c;
-					lineto[x*4+realpitch+2] = c;
-					lineto[x*4+realpitch+3] = c;
+					lineto[x*2] = c;
+					lineto[x*2+1] = c;
+					lineto[x*2+2] = c;
+					lineto[x*2+3] = c;
+					lineto[x*2+realpitch] = c;
+					lineto[x*2+realpitch+1] = c;
+					lineto[x*2+realpitch+2] = c;
+					lineto[x*2+realpitch+3] = c;
 				}
 			}
 		}

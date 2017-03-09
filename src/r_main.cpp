@@ -352,9 +352,9 @@ CUSTOM_CVAR (Int, r_detail, 0, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 		return;
 	}
 
-	if (self < 0 || self > 3)
+	if (self < 0 || self > 4)
 	{
-		Printf ("Bad detail mode. (Use 0-3)\n");
+		Printf ("Bad detail mode. (Use 0-4)\n");
 		badrecovery = true;
 		self = (detailyshift << 1) | detailxshift;
 		return;

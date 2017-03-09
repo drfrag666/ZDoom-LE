@@ -401,8 +401,14 @@ void R_SetViewSize (int blocks)
 
 void R_SetDetail (int detail)
 {
-	detailxshift = detail & 1;
-	detailyshift = (detail >> 1) & 1;
+	if (detail < 4) {
+		detailxshift = detail & 1;
+		detailyshift = (detail >> 1) & 1;
+	}
+	else {
+		detailxshift = 1;
+		detailyshift = 1;
+	}
 }
 
 //==========================================================================

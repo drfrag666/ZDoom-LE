@@ -600,6 +600,7 @@ OptionValue DetailModes
 	1.0, "Double Horizontally"
 	2.0, "Double Vertically"
 	3.0, "Double Horiz and Vert"
+	4.0, "Quad Horiz and Double Vert"
 }
 
 OptionValue ColumnMethods 

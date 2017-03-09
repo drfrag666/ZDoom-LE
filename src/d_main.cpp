@@ -2437,7 +2437,7 @@ void D_DoomMain (void)
 
 		StartScreen->Progress ();
 
-		Printf ("R_Init: Init %s refresh subsystem.\n", gameinfo.ConfigName.GetChars());
+		Printf ("R_Init: Init %s refresh daemon.\n", gameinfo.ConfigName.GetChars());
 		StartScreen->LoadingStatus ("Loading graphics", 0x3f);
 		R_Init ();
 
