@@ -448,6 +448,11 @@ else( SSE_MATTERS )
 	set( BACKPATCH 0 )
 endif( SSE_MATTERS )
 
+# Set up flags for MSVC
+if (MSVC)
+	set( CMAKE_CXX_FLAGS "/MP ${CMAKE_CXX_FLAGS}" )
+endif (MSVC)
+
 # Set up flags for GCC
 
 if( ZD_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
