@@ -22,7 +22,7 @@
 #endif
 
 #ifndef WINVER
-#define WINVER 0x0500   // default to Windows Version 4.0
+#define WINVER 0x0400   // default to Windows Version 4.0
 #endif
 
 #include <winresrc.h>

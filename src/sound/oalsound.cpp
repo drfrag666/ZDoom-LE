@@ -56,7 +56,7 @@
 #include "i_musicinterns.h"
 #include "tempfiles.h"
 
-#include "oalload.h"
+//#include "oalload.h"
 
 CVAR (String, snd_aldevice, "Default", CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR (Bool, snd_efx, false, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
@@ -81,40 +81,9 @@ bool IsOpenALPresent()
 #ifdef NO_OPENAL
 	return false;
 #else
-	static bool cached_result = false;
-	static bool done = false;
-
-	if (!done)
-	{
-		done = true;
-		if (hmodOpenAL == NULL)
-		{
-			hmodOpenAL = LoadLibrary(NicePath("$PROGDIR/" OPENALLIB));
-			if (hmodOpenAL == NULL)
-			{
-				hmodOpenAL = LoadLibrary(OPENALLIB);
-				if (hmodOpenAL == NULL)
-				{
-					return false;
-				}
-			}
-			for(int i = 0; oalfuncs[i].name != NULL; i++)
-			{
-				*oalfuncs[i].funcaddr = GetProcAddress(hmodOpenAL, oalfuncs[i].name);
-				if (*oalfuncs[i].funcaddr == NULL)
-				{
-					FreeLibrary(hmodOpenAL);
-					hmodOpenAL = NULL;
-					return false;
-				}
-			}
-		}
-		cached_result = true;
-	}
-	return cached_result;
+	return true;
 #endif
 }
-
 
 
 void I_BuildALDeviceList(FOptionValues *opt)
@@ -124,21 +93,18 @@ void I_BuildALDeviceList(FOptionValues *opt)
     opt->mValues[0].Text = "Default";
 
 #ifndef NO_OPENAL
-	if (IsOpenALPresent())
+	const ALCchar *names = (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") ?
+		alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER) :
+		alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	if (!names)
+		Printf("Failed to get device list: %s\n", alcGetString(NULL, alcGetError(NULL)));
+	else while (*names)
 	{
-		const ALCchar *names = (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") ?
-			alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER) :
-			alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-		if (!names)
-			Printf("Failed to get device list: %s\n", alcGetString(NULL, alcGetError(NULL)));
-		else while (*names)
-		{
-			unsigned int i = opt->mValues.Reserve(1);
-			opt->mValues[i].TextValue = names;
-			opt->mValues[i].Text = names;
+		unsigned int i = opt->mValues.Reserve(1);
+		opt->mValues[i].TextValue = names;
+		opt->mValues[i].Text = names;
 
-			names += strlen(names) + 1;
-		}
+		names += strlen(names) + 1;
 	}
 #endif
 }
@@ -694,8 +660,24 @@ OpenALSoundRenderer::OpenALSoundRenderer()
 
     Printf("I_InitSound: Initializing OpenAL\n");
 
-	Device = InitDevice();
-	if (Device == NULL) return;
+//	Device = InitDevice();
+//	if (Device == NULL) return;
+    if(strcmp(snd_aldevice, "Default") != 0)
+    {
+        Device = alcOpenDevice(*snd_aldevice);
+        if(!Device)
+            Printf(TEXTCOLOR_BLUE" Failed to open device "TEXTCOLOR_BOLD"%s"TEXTCOLOR_BLUE". Trying default.\n", *snd_aldevice);
+    }
+
+    if(!Device)
+    {
+        Device = alcOpenDevice(NULL);
+        if(!Device)
+        {
+            Printf(TEXTCOLOR_RED" Could not open audio device\n");
+            return;
+        }
+    }
 
     const ALCchar *current = NULL;
     if(alcIsExtensionPresent(Device, "ALC_ENUMERATE_ALL_EXT"))
