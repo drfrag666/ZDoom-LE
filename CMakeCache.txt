@@ -30,7 +30,7 @@ BZIP2_LIBRARY_DEBUG:FILEPATH=BZIP2_LIBRARY_DEBUG-NOTFOUND
 BZIP2_LIBRARY_RELEASE:FILEPATH=BZIP2_LIBRARY_RELEASE-NOTFOUND
 
 //Path to a program.
-CMAKE_AR:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/ar.exe
+CMAKE_AR:FILEPATH=C:/DEV/MinGW32/bin/ar.exe
 
 //For backwards compatibility, what version of CMake commands and
 // syntax should this version of CMake try to support.
@@ -47,7 +47,7 @@ CMAKE_CODEBLOCKS_EXECUTABLE:FILEPATH=C:/Program Files/CodeBlocks/cbp2make.exe
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //CXX compiler.
-CMAKE_CXX_COMPILER:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/g++.exe
+CMAKE_CXX_COMPILER:FILEPATH=C:/DEV/MinGW32/bin/g++.exe
 
 //Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -70,7 +70,7 @@ CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 CMAKE_CXX_STANDARD_LIBRARIES:STRING=-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
 
 //C compiler.
-CMAKE_C_COMPILER:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe
+CMAKE_C_COMPILER:FILEPATH=C:/DEV/MinGW32/bin/gcc.exe
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -114,7 +114,7 @@ CMAKE_GNUtoMS:BOOL=OFF
 CMAKE_INSTALL_PREFIX:PATH=C:/Program Files/ZDoom
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/ld.exe
+CMAKE_LINKER:FILEPATH=C:/DEV/MinGW32/bin/ld.exe
 
 //make program
 CMAKE_MAKE_PROGRAM:FILEPATH=C:/PROGRA~1/CODEBL~1/MinGW/bin/mingw32-make.exe
@@ -135,22 +135,22 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/nm.exe
+CMAKE_NM:FILEPATH=C:/DEV/MinGW32/bin/nm.exe
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/objcopy.exe
+CMAKE_OBJCOPY:FILEPATH=C:/DEV/MinGW32/bin/objcopy.exe
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/objdump.exe
+CMAKE_OBJDUMP:FILEPATH=C:/DEV/MinGW32/bin/objdump.exe
 
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=ZDoom
 
 //Path to a program.
-CMAKE_RANLIB:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/ranlib.exe
+CMAKE_RANLIB:FILEPATH=C:/DEV/MinGW32/bin/ranlib.exe
 
 //RC compiler.
-CMAKE_RC_COMPILER:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/windres.exe
+CMAKE_RC_COMPILER:FILEPATH=C:/DEV/MinGW32/bin/windres.exe
 
 //Flags for Fortran compiler.
 CMAKE_RC_FLAGS:STRING=' '
@@ -196,7 +196,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=C:/Program Files/CodeBlocks/MinGW/bin/strip.exe
+CMAKE_STRIP:FILEPATH=C:/DEV/MinGW32/bin/strip.exe
 
 //If true, cmake will use relative paths in makefiles and projects.
 CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
@@ -217,16 +217,16 @@ DX_dinput8_LIBRARY:FILEPATH=C:/DEV/dx80_mgw/lib/libdinput8.a
 DX_dxguid_LIBRARY:FILEPATH=C:/DEV/dx80_mgw/lib/libdxguid.a
 
 //Dynamically load fluidsynth
-DYN_FLUIDSYNTH:BOOL=ON
+DYN_FLUIDSYNTH:BOOL=OFF
 
 //Single output directory for building all executables.
 EXECUTABLE_OUTPUT_PATH:PATH=
 
 //Path to a file.
-FLUIDSYNTH_INCLUDE_DIR:PATH=C:/DEV/fluidsynth-1.1.6/include
+FLUIDSYNTH_INCLUDE_DIR:PATH=
 
 //Path to a library.
-FLUIDSYNTH_LIBRARIES:FILEPATH=C:/DEV/fluidsynth-1.1.6/libfluidsynth.dll
+FLUIDSYNTH_LIBRARIES:FILEPATH=
 
 //Turn on cross compiling.
 FORCE_CROSSCOMPILE:BOOL=OFF
