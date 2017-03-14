@@ -2340,6 +2340,7 @@ void R_CheckDrawSegs ()
 ptrdiff_t R_NewOpening (ptrdiff_t len)
 {
 	ptrdiff_t res = lastopening;
+	len = (len + 1) & ~1;	// only return DWORD aligned addresses because some code stores fixed_t's and floats in openings... 
 	lastopening += len;
 	if ((size_t)lastopening > maxopenings)
 	{
