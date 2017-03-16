@@ -7,7 +7,7 @@ OpenAL-soft.
  To compile you need the original ZDoom maint repo, then overwrite with the files from this one.
  Compiles with CMake 2.8.12, CodeBlocks 16.01 (TDM-GCC 4.9.2) and NASM 2.10.09. You'll need the following libraries:
 dx80_mgw.zip, openal-soft-1.12.854, mpg123-1.20-1-x86.zip, libsndfile-1.0.25-w32.setup.exe, fluidsynth.7z (optional)
-and fmodapi42807win32-installer.exe (optional).
+and fmodapi42636win32-installer.exe (optional).
  But to get Windows 95 support you need TDM-GCC 4.6.1 instead, you still can compile with CodeBlocks using CMake.
  A sample CmMakeCache.txt to generate a CodeBlocks makefile is included.
  
