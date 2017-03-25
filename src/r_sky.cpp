@@ -57,6 +57,8 @@ CUSTOM_CVAR (Bool, r_stretchsky, true, CVAR_ARCHIVE)
 extern "C" int detailxshift, detailyshift;
 fixed_t			freelookviewheight;
 
+EXTERN_CVAR (Int, r_detail)
+
 //==========================================================================
 //
 // R_InitSkyMap
@@ -119,6 +121,11 @@ void R_InitSkyMap ()
 
 		skyiscale = Scale (skyiscale, FieldOfView, 2048);
 		skyscale = Scale (skyscale, 2048, FieldOfView);
+		if (r_detail > 1)
+		{
+			skyiscale = skyiscale*2;
+			skyscale = skyscale*2;
+		}
 	}
 
 	if (skystretch)
