@@ -267,7 +267,7 @@ IWad
 
 IWad
 {
-	Name = "The Ultimate DOOM Operating System v2.8"
+	Name = "The Ultimate DOOM"
 	Autoname = "doom.doom1.ultimate"
 	Game = "Doom"
 	Config = "Doom"
@@ -281,7 +281,7 @@ IWad
 
 IWad
 {
-	Name = "DOOM Operating System v2.8"
+	Name = "DOOM"
 	Autoname = "doom.doom1.registered"
 	Game = "Doom"
 	Config = "Doom"
@@ -295,7 +295,7 @@ IWad
 
 IWad
 {
-	Name = "DOOM: Knee Deep in the Dead Operating System v2.8"
+	Name = "DOOM: Knee Deep in the Dead"
 	Game = "Doom"
 	Config = "Doom"
 	Mapinfo = "mapinfo/doom1.txt"
@@ -306,7 +306,7 @@ IWad
 
 IWad
 {
-	Name = "Final Doom: TNT - Evilution Operating System v2.8"
+	Name = "Final Doom: TNT - Evilution"
 	Autoname = "doom.doom2.tnt"
 	Game = "Doom"
 	Config = "Doom"
@@ -318,7 +318,7 @@ IWad
 
 IWad
 {
-	Name = "Final Doom: Plutonia Experiment Operating System v2.8"
+	Name = "Final Doom: Plutonia Experiment"
 	Autoname = "doom.doom2.plutonia"
 	Game = "Doom"
 	Config = "Doom"
@@ -344,7 +344,7 @@ IWad
 // Doom 2 must be last to be checked because MAP01 is its only requirement
 IWad
 {
-	Name = "DOOM 2: Hell on Earth Operating System v2.8"
+	Name = "DOOM 2: Hell on Earth"
 	Autoname = "doom.doom2.commercial"
 	Game = "Doom"
 	Config = "Doom"
