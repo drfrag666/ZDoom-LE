@@ -108,15 +108,29 @@ if( WIN32 )
 	set( FMOD_LIB_PATH_SUFFIXES PATH_SUFFIXES lib )
 	set( NASM_NAMES nasmw nasm )
 
-	find_path( DDRAW_INCLUDE_DIR ddraw.h
+	set( USE_D3D9 NO )
+	find_path( D3D_INCLUDE_DIR d3d9.h
 		PATHS ENV DXSDK_DIR
 		PATH_SUFFIXES Include )
-	if( NOT DDRAW_INCLUDE_DIR )
-		message( SEND_ERROR "Could not find DirectX 8 header files" )
-	else( NOT DDRAW_INCLUDE_DIR )
-		include_directories( ${DDRAW_INCLUDE_DIR} )
-	endif( NOT DDRAW_INCLUDE_DIR )
+	if( NOT D3D_INCLUDE_DIR )
+		message( WARNING "Could not find DirectX 9 header files" )
+	else( NOT D3D_INCLUDE_DIR )
+		include_directories( ${D3D_INCLUDE_DIR} )
+		set( USE_D3D9 YES )
+		add_definitions( -DUSE_D3D9 )
+	endif( NOT D3D_INCLUDE_DIR )
 
+	if( NOT USE_D3D9 )
+		find_path( DDRAW_INCLUDE_DIR ddraw.h
+			PATHS ENV DXSDK_DIR
+			PATH_SUFFIXES Include )
+		if( NOT DDRAW_INCLUDE_DIR )
+			message( SEND_ERROR "Could not find DirectX 8 header files" )
+		else( NOT DDRAW_INCLUDE_DIR )
+			include_directories( ${DDRAW_INCLUDE_DIR} )
+		endif( NOT DDRAW_INCLUDE_DIR )
+	endif( NOT USE_D3D9 )
+		
 	find_library( DX_dxguid_LIBRARY dxguid
 		PATHS ENV DXSDK_DIR
 		PATH_SUFFIXES Lib Lib/${XBITS} )
@@ -148,7 +162,7 @@ if( WIN32 )
 		comdlg32
 		ws2_32
 		setupapi
-		oleaut32 )
+		oleaut32)
 else( WIN32 )
 	if( APPLE )
 		set( FMOD_SEARCH_PATHS "/Developer/FMOD Programmers API Mac/api" )
@@ -570,23 +584,46 @@ else( NOT DYN_FLUIDSYNTH )
 endif( NOT DYN_FLUIDSYNTH )
 
 # Start defining source files for ZDoom
-set( PLAT_WIN32_SOURCES
-	win32/eaxedit.cpp
-	win32/fb_ddraw.cpp
-	win32/hardware.cpp
-	win32/helperthread.cpp
-	win32/i_cd.cpp
-	win32/i_crash.cpp
-	win32/i_input.cpp
-	win32/i_keyboard.cpp
-	win32/i_mouse.cpp
-	win32/i_dijoy.cpp
-	win32/i_rawps2.cpp
-	win32/i_main.cpp
-	win32/i_movie.cpp
-	win32/i_system.cpp
-	win32/st_start.cpp
-	win32/win32video.cpp )
+if( NOT USE_D3D9 )
+	set( PLAT_WIN32_SOURCES
+		win32/eaxedit.cpp
+		win32/fb_ddraw.cpp
+		win32/hardware.cpp
+		win32/helperthread.cpp
+		win32/i_cd.cpp
+		win32/i_crash.cpp
+		win32/i_input.cpp
+		win32/i_keyboard.cpp
+		win32/i_mouse.cpp
+		win32/i_dijoy.cpp
+		win32/i_rawps2.cpp
+		win32/i_main.cpp
+		win32/i_movie.cpp
+		win32/i_system.cpp
+		win32/st_start.cpp
+		win32/win32video.cpp )
+else ( NOT USE_D3D9 )
+	set( PLAT_WIN32_SOURCES
+		win32/eaxedit.cpp
+		win32/fb_d3d9.cpp
+		win32/fb_d3d9_wipe.cpp
+		win32/fb_ddraw.cpp
+		win32/hardware.cpp
+		win32/helperthread.cpp
+		win32/i_cd.cpp
+		win32/i_crash.cpp
+		win32/i_input.cpp
+		win32/i_keyboard.cpp
+		win32/i_mouse.cpp
+		win32/i_dijoy.cpp
+		win32/i_rawps2.cpp
+		win32/i_main.cpp
+		win32/i_movie.cpp
+		win32/i_system.cpp
+		win32/st_start.cpp
+		win32/win32video.cpp )
+endif ( NOT USE_D3D9 )
+	
 set( PLAT_POSIX_SOURCES
 	posix/i_cd.cpp
 	posix/i_movie.cpp

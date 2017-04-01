@@ -61,7 +61,7 @@ CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
 //Flags used by the compiler during release builds (/MD /Ob1 /Oi
 // /Ot /Oy /Gs will produce slightly less optimized but smaller
 // files).
-CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG -mtune=i586
+CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG -mtune=pentium2
 
 //Flags used by the compiler during Release with Debug Info builds.
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
@@ -208,13 +208,16 @@ CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
 CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 
 //Path to a file.
+D3D_INCLUDE_DIR:PATH=C:/DEV/dx9mgw/include
+
+//Path to a file.
 DDRAW_INCLUDE_DIR:PATH=C:/DEV/dx80_mgw/include
 
 //Path to a library.
-DX_dinput8_LIBRARY:FILEPATH=C:/DEV/dx80_mgw/lib/libdinput8.a
+DX_dinput8_LIBRARY:FILEPATH=C:/DEV/dx9mgw/lib/libdinput8.a
 
 //Path to a library.
-DX_dxguid_LIBRARY:FILEPATH=C:/DEV/dx80_mgw/lib/libdxguid.a
+DX_dxguid_LIBRARY:FILEPATH=C:/DEV/dx9mgw/lib/libdxguid.a
 
 //Dynamically load fluidsynth
 DYN_FLUIDSYNTH:BOOL=OFF

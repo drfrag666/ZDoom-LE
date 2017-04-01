@@ -415,7 +415,7 @@ void Win32Video::DumpAdapters()
 {
 
 #ifdef USE_D3D9
-	if (D3D == NULL)
+/*	if (D3D == NULL)
 	{
 		Printf("Multi-monitor support requires Direct3D.\n");
 		return;
@@ -442,10 +442,7 @@ void Win32Video::DumpAdapters()
 		HMONITOR hm = D3D->GetAdapterMonitor(i);
 		MONITORINFOEX mi;
 		mi.cbSize = sizeof(mi);
-
-		TOptWin32Proc<BOOL(WINAPI*)(HMONITOR, LPMONITORINFO)> GetMonitorInfo("user32.dll", "GetMonitorInfoW");
-		assert(GetMonitorInfo != NULL); // Missing in NT4, but so is D3D
-		if (GetMonitorInfo.Call(hm, &mi))
+		if (GetMonitorInfo(hm, &mi))
 		{
 			mysnprintf(moreinfo, countof(moreinfo), " [%ldx%ld @ (%ld,%ld)]%s",
 				mi.rcMonitor.right - mi.rcMonitor.left,
@@ -457,6 +454,8 @@ void Win32Video::DumpAdapters()
 			i == m_Adapter ? TEXTCOLOR_BOLD : "",
 			i + 1, ai.Description, moreinfo);
 	}
+*/	Printf("Display adapters information not available.\n");
+	return;
 #else
 	Printf("Multi-monitor support requires Direct3D.\n");
 	return;
