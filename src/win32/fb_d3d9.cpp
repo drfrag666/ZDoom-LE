@@ -2536,7 +2536,7 @@ void D3DFB::DrawBlendingRect()
 	{
 		return;
 	}
-	Dim(FlashColor, FlashAmount / 256.f, viewwindowx, viewwindowy, viewwidth, viewheight);
+	Dim(FlashColor, FlashAmount / 256.f, viewwindowx, viewwindowy, realviewwidth, realviewheight);
 }
 
 //==========================================================================
