@@ -1591,7 +1591,7 @@ void R_DrawRemainingPlayerSprites()
 				if (screenblocks > 9)
 					posx=posx*2;
 				else
-					posx=posx*2- 16*(10 - screenblocks);
+					posx=posx*2 - (10-screenblocks)*((SCREENWIDTH/2)/10);
 			}
 			screen->DrawTexture(vis->pic,
 				posx,
