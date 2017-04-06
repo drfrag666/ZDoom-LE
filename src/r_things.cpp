@@ -2594,6 +2594,11 @@ void R_DrawVoxel(fixed_t globalposx, fixed_t globalposy, fixed_t globalposz, ang
 	// Also do some magic voodoo scaling to make them the right size.
 	daxscale = daxscale / (0xC000 >> 6);
 	dayscale = dayscale / (0xC000 >> 6);
+	if (daxscale <= 0 || dayscale <= 0)
+	{
+		// won't be visible.
+		return;
+	}
 
 	cosang = finecosine[viewang >> ANGLETOFINESHIFT] >> 2;
 	sinang = -finesine[viewang >> ANGLETOFINESHIFT] >> 2;
