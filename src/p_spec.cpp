@@ -1212,15 +1212,15 @@ void P_InitSectorSpecial(sector_t *sector, int special, bool nothinkers)
 		break;
 
 	case dDamage_LavaWimpy:
-		P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+		P_SetupSectorDamage(sector, 5, 16, 256, NAME_Fire, SECF_DMGTERRAINFX);
 		break;
 
 	case dDamage_LavaHefty:
-		P_SetupSectorDamage(sector, 8, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+		P_SetupSectorDamage(sector, 8, 16, 256, NAME_Fire, SECF_DMGTERRAINFX);
 		break;
 
 	case dScroll_EastLavaDamage:
-		P_SetupSectorDamage(sector, 5, 32, 256, NAME_Fire, SECF_DMGTERRAINFX);
+		P_SetupSectorDamage(sector, 5, 16, 256, NAME_Fire, SECF_DMGTERRAINFX);
 		if (!nothinkers)
 		{
 			new DStrobe(sector, STROBEBRIGHT, FASTDARK, false);
