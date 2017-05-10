@@ -80,6 +80,7 @@ enum
 	CP_CLEARSPECIAL,
 	CP_SETACTIVATION,
 	CP_SECTORFLOOROFFSET,
+	CP_SETSECTORSPECIAL,
 	CP_SETWALLYSCALE,
 	CP_SETTHINGZ,
 	CP_SETTAG,
@@ -109,8 +110,8 @@ static FCompatOption Options[] =
 	{ "ignoreteleporttags",		BCOMPATF_BADTELEPORTERS, SLOT_BCOMPAT },
 	{ "rebuildnodes",			BCOMPATF_REBUILDNODES, SLOT_BCOMPAT },
 	{ "linkfrozenprops",		BCOMPATF_LINKFROZENPROPS, SLOT_BCOMPAT },
-	{ "disablepushwindowcheck",	BCOMPATF_NOWINDOWCHECK, SLOT_BCOMPAT },
 	{ "floatbob",				BCOMPATF_FLOATBOB, SLOT_BCOMPAT },
+	{ "noslopeid",				BCOMPATF_NOSLOPEID, SLOT_BCOMPAT },
 
 	// list copied from g_mapinfo.cpp
 	{ "shorttex",				COMPATF_SHORTTEX, SLOT_COMPAT },
@@ -147,6 +148,8 @@ static FCompatOption Options[] =
 	{ "soundcutoff",			COMPATF2_SOUNDCUTOFF, SLOT_COMPAT2 },
 	{ "pointonline",			COMPATF2_POINTONLINE, SLOT_COMPAT2 },
 	{ "multiexit",				COMPATF2_MULTIEXIT, SLOT_COMPAT2 },
+	{ "teleport",				COMPATF2_TELEPORT, SLOT_COMPAT2 },
+	{ "disablepushwindowcheck",	COMPATF2_PUSHWINDOW, SLOT_COMPAT2 },
 
 	{ NULL, 0, 0 }
 };
@@ -291,6 +294,15 @@ void ParseCompatibility()
 				CompatParams.Push(sc.Number);
 				sc.MustGetFloat();
 				CompatParams.Push(FLOAT2FIXED(sc.Float));
+			}
+			else if (sc.Compare("setsectorspecial"))
+			{
+				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
+				CompatParams.Push(CP_SETSECTORSPECIAL);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
 			}
 			else if (sc.Compare("setwallyscale"))
 			{
@@ -527,6 +539,16 @@ void SetCompatibilityParams()
 					i += 3;
 					break;
 				}
+				case CP_SETSECTORSPECIAL:
+				{
+					const int index = CompatParams[i + 1];
+					if (index < numsectors)
+					{
+						sectors[index].special = CompatParams[i + 2];
+					}
+					i += 3;
+					break;
+				}
 				case CP_SETWALLYSCALE:
 				{
 					if (CompatParams[i+1] < numlines)
@@ -555,7 +577,14 @@ void SetCompatibilityParams()
 					if ((unsigned)CompatParams[i + 1] < (unsigned)numsectors)
 					{
 						// this assumes that the sector does not have any tags yet!
-						tagManager.AddSectorTag(CompatParams[i + 1],  CompatParams[i + 2]);
+						if (CompatParams[i + 2] == 0)
+						{
+							tagManager.RemoveSectorTags(CompatParams[i + 1]);
+						}
+						else
+						{
+							tagManager.AddSectorTag(CompatParams[i + 1], CompatParams[i + 2]);
+						}
 					}
 					i += 3;
 					break;

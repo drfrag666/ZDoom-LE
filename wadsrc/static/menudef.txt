@@ -1333,6 +1333,8 @@ OptionMenu "CompatibilityOptions"
 	Option "Use Doom's floor motion behavior",			"compat_floormove", "YesNo"
 	Option "Use Doom's point-on-line algorithm",		"compat_pointonline", "YesNo"
 	Option "Level exit can be triggered more than once",	"compat_multiexit", "YesNo"
+	Option "Scripted teleports don't trigger sector actions",	"compat_teleport", "YesNo"
+	Option "Non-blocking lines can be pushed",					"compat_pushwindow", "YesNo"
 	
 	StaticText " "
 	StaticText "Physics Behavior",1
