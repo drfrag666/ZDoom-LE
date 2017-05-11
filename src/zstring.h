@@ -297,15 +297,52 @@ protected:
 
 	friend struct FStringData;
 
-private:
-	// Prevent these from being called as current practices are to use Compare.
-	// Without this FStrings will be accidentally compared against char* ptrs.
-	bool operator == (const FString &illegal) const;
-	bool operator != (const FString &illegal) const;
-	bool operator < (const FString &illegal) const;
-	bool operator > (const FString &illegal) const;
-	bool operator <= (const FString &illegal) const;
-	bool operator >= (const FString &illegal) const;
+public:
+	bool operator == (const FString &other) const
+	{
+		return Compare(other) == 0;
+	}
+
+	bool operator != (const FString &other) const
+	{
+		return Compare(other) != 0;
+	}
+
+	bool operator < (const FString &other) const
+	{
+		return Compare(other) < 0;
+	}
+
+	bool operator > (const FString &other) const
+	{
+		return Compare(other) > 0;
+	}
+
+	bool operator <= (const FString &other) const
+	{
+		return Compare(other) <= 0;
+	}
+
+	bool operator >= (const FString &other) const
+	{
+		return Compare(other) >= 0;
+	}
+
+	private:
+	// Prevent these from being called.
+	bool operator == (const char *) const;
+	bool operator != (const char *) const;
+	bool operator <  (const char *) const;
+	bool operator >  (const char *) const;
+	bool operator <= (const char *) const;
+	bool operator >= (const char *) const;
+
+	bool operator == (FName) const;
+	bool operator != (FName) const;
+	bool operator <  (FName) const;
+	bool operator >  (FName) const;
+	bool operator <= (FName) const;
+	bool operator >= (FName) const;
 };
 
 namespace StringFormat

@@ -52,6 +52,7 @@
 #include "p_tags.h"
 #include "r_state.h"
 #include "w_wad.h"
+//#include "textures.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -79,12 +80,15 @@ enum
 	CP_SETSPECIAL,
 	CP_CLEARSPECIAL,
 	CP_SETACTIVATION,
-	CP_SECTORFLOOROFFSET,
+	CP_SETSECTOROFFSET,
 	CP_SETSECTORSPECIAL,
 	CP_SETWALLYSCALE,
+	CP_SETWALLTEXTURE,
 	CP_SETTHINGZ,
 	CP_SETTAG,
 	CP_SETTHINGFLAGS,
+	CP_SETVERTEX,
+	CP_SETTHINGSKILLS,
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -164,8 +168,14 @@ static const char *const WallTiers[] =
 	"Top", "Mid", "Bot", NULL
 };
 
+static const char *const SectorPlanes[] =
+{
+	"floor", "ceil", NULL
+};
+
 static TArray<int> CompatParams;
 static int ii_compatparams;
+static TArray<FString> TexNames;
 
 // CODE --------------------------------------------------------------------
 
@@ -286,12 +296,14 @@ void ParseCompatibility()
 				sc.MustGetNumber();
 				CompatParams.Push(sc.Number);
 			}
-			else if (sc.Compare("sectorflooroffset"))
+			else if (sc.Compare("setsectoroffset"))
 			{
 				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
-				CompatParams.Push(CP_SECTORFLOOROFFSET);
+				CompatParams.Push(CP_SETSECTOROFFSET);
 				sc.MustGetNumber();
 				CompatParams.Push(sc.Number);
+				sc.MustGetString();
+				CompatParams.Push(sc.MustMatchString(SectorPlanes));
 				sc.MustGetFloat();
 				CompatParams.Push(FLOAT2FIXED(sc.Float));
 			}
@@ -317,6 +329,26 @@ void ParseCompatibility()
 				sc.MustGetFloat();
 				CompatParams.Push(FLOAT2FIXED(sc.Float));
 			}
+			else if (sc.Compare("setwalltexture"))
+			{
+				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
+				CompatParams.Push(CP_SETWALLTEXTURE);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
+				sc.MustGetString();
+				CompatParams.Push(sc.MustMatchString(LineSides));
+				sc.MustGetString();
+				CompatParams.Push(sc.MustMatchString(WallTiers));
+				sc.MustGetString();
+				const FString texName = sc.String;
+				const unsigned int texIndex = TexNames.Find(texName);
+				const unsigned int texCount = TexNames.Size();
+				if (texIndex == texCount)
+				{
+					TexNames.Push(texName);
+				}
+				CompatParams.Push(texIndex);
+			}
 			else if (sc.Compare("setthingz"))
 			{
 				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
@@ -339,6 +371,27 @@ void ParseCompatibility()
 			{
 				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
 				CompatParams.Push(CP_SETTHINGFLAGS);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
+			}
+			else if (sc.Compare("setvertex"))
+			{
+				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
+				CompatParams.Push(CP_SETVERTEX);
+				sc.MustGetNumber();
+				CompatParams.Push(sc.Number);
+				sc.MustGetFloat();
+				CompatParams.Push(int(sc.Float * 256));	// do not use full fixed here so that it can eventually handle larger levels
+				sc.MustGetFloat();
+				CompatParams.Push(int(sc.Float * 256));	// do not use full fixed here so that it can eventually handle larger levels
+				flags.CompatFlags[SLOT_BCOMPAT] |= BCOMPATF_REBUILDNODES;
+			}
+			else if (sc.Compare("setthingskills"))
+			{
+				if (flags.ExtCommandIndex == ~0u) flags.ExtCommandIndex = CompatParams.Size();
+				CompatParams.Push(CP_SETTHINGSKILLS);
 				sc.MustGetNumber();
 				CompatParams.Push(sc.Number);
 				sc.MustGetNumber();
@@ -528,15 +581,18 @@ void SetCompatibilityParams()
 					i += 3;
 					break;
 				}
-				case CP_SECTORFLOOROFFSET:
+				case CP_SETSECTOROFFSET:
 				{
 					if (CompatParams[i+1] < numsectors)
 					{
 						sector_t *sec = &sectors[CompatParams[i+1]];
-						sec->floorplane.ChangeHeight(CompatParams[i+2]);
-						sec->ChangePlaneTexZ(sector_t::floor, CompatParams[i+2]);
+						secplane_t& plane = sector_t::floor == CompatParams[i + 2] 
+							? sec->floorplane 
+							: sec->ceilingplane;
+						plane.ChangeHeight(CompatParams[i+3]);
+						sec->ChangePlaneTexZ(CompatParams[i + 2], CompatParams[i+3]);
 					}
-					i += 3;
+					i += 4;
 					break;
 				}
 				case CP_SETSECTORSPECIAL:
@@ -557,6 +613,21 @@ void SetCompatibilityParams()
 						if (side != NULL)
 						{
 							side->SetTextureYScale(CompatParams[i+3], CompatParams[i+4]);
+						}
+					}
+					i += 5;
+					break;
+				}
+				case CP_SETWALLTEXTURE:
+				{
+					if (CompatParams[i + 1] < numlines)
+					{
+						side_t *side = lines[CompatParams[i + 1]].sidedef[CompatParams[i + 2]];
+						if (side != NULL)
+						{
+							assert(TexNames.Size() > (unsigned int)CompatParams[i + 4]);
+							const FTextureID texID = TexMan.GetTexture(TexNames[CompatParams[i + 4]], FTexture::TEX_Any);
+							side->SetTexture(CompatParams[i + 3], texID);
 						}
 					}
 					i += 5;
@@ -594,6 +665,25 @@ void SetCompatibilityParams()
 					if ((unsigned)CompatParams[i + 1] < MapThingsConverted.Size())
 					{
 						MapThingsConverted[CompatParams[i + 1]].flags = CompatParams[i + 2];
+					}
+					i += 3;
+					break;
+				}
+				case CP_SETVERTEX:
+				{
+					if ((unsigned)CompatParams[i + 1] < numvertexes)
+					{
+						vertexes[CompatParams[i + 1]].x = CompatParams[i + 2] / 256.;
+						vertexes[CompatParams[i + 1]].y = CompatParams[i + 3] / 256.;
+					}
+					i += 4;
+					break;
+				}
+				case CP_SETTHINGSKILLS:
+				{
+					if ((unsigned)CompatParams[i + 1] < MapThingsConverted.Size())
+					{
+						MapThingsConverted[CompatParams[i + 1]].SkillFilter = CompatParams[i + 2];
 					}
 					i += 3;
 					break;
