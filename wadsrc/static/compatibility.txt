@@ -483,6 +483,11 @@ F6EE16F770AD309D608EA0B1F1E249FC // Ultimate Doom, e4m3
 	setsectorspecial 263 0
 	setsectorspecial 264 0
 }
+AB24AE6E2CB13CBDD04600A4D37F9189 // doom2.wad map02
+{
+	// stuck shotgun guy
+	setthingxy 85 960 904
+}
 1A540BA717BF9EC85F8522594C352F2A // Doom II, map15
 {
 	setsectorspecial 147 0
@@ -554,7 +559,7 @@ ADD0FAC41AFB0B3C9B9F3C0006F93805 // e1m3
 CA3773ED313E8899311F3DD0CA195A68 // e3m6
 {
 	// Quartz flask outside of map
-	setthingskills 373 0
+	setthingxy 373 -384 1088
 	// Missing wall torch on hard difficulty
 	setthingskills 448 31
 	// Missing textures
