@@ -3158,6 +3158,7 @@ DEFINE_ACTION_FUNCTION_PARAMS(AActor, A_Respawn)
 		self->flags5 = defs->flags5;
 		self->flags6 = defs->flags6;
 		self->flags7 = defs->flags7;
+		self->flags8 = defs->flags8;
 		self->SetState (self->SpawnState);
 		self->renderflags &= ~RF_INVISIBLE;
 

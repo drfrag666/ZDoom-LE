@@ -826,7 +826,8 @@ void P_NewChaseDir(AActor * actor)
 		if (!(actor->flags6 & MF6_NOFEAR))
 		{
 			if ((actor->target->player != NULL && (actor->target->player->cheats & CF_FRIGHTENING)) || 
-				(actor->flags4 & MF4_FRIGHTENED))
+				(actor->flags4 & MF4_FRIGHTENED) ||
+				(actor->target->flags8 & MF8_FRIGHTENING))
 			{
 				delta.x = -delta.x;
 				delta.y = -delta.y;
@@ -2398,7 +2399,7 @@ void A_DoChase (AActor *actor, bool fastchase, FState *meleestate, FState *missi
 
 	// [RH] Scared monsters attack less frequently
 	if (((actor->target->player == NULL ||
-		!(actor->target->player->cheats & CF_FRIGHTENING)) &&
+		!((actor->target->player->cheats & CF_FRIGHTENING) || (actor->target->flags8 & MF8_FRIGHTENING))) &&
 		!(actor->flags4 & MF4_FRIGHTENED)) ||
 		pr_scaredycat() < 43)
 	{

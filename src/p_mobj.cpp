@@ -1,4 +1,4 @@
-// Emacs style mode select	 -*- C++ -*- 
+﻿// Emacs style mode select	 -*- C++ -*- 
 // Emacs style mode select	 -*- C++ -*- 
 //-----------------------------------------------------------------------------
 //
@@ -211,6 +211,7 @@ void AActor::Serialize (FArchive &arc)
 	}
 	if (SaveVersion >= 4512)
 	{
+		arc << flags8;
 		arc << weaponspecial;
 	}
 	arc	<< special1
@@ -6525,6 +6526,9 @@ void PrintMiscActorInfo(AActor *query)
 		Printf("\n   flags7: %x", query->flags7.GetValue());
 		for (flagi = 0; flagi <= 31; flagi++)
 			if (query->flags7 & ActorFlags7::FromInt(1<<flagi)) Printf(" %s", FLAG_NAME(1<<flagi, flags7));
+		Printf("\n   flags8: %x", query->flags8.GetValue());
+		for (flagi = 0; flagi <= 31; flagi++)
+			if (query->flags8 & ActorFlags8::FromInt(1<<flagi)) Printf(" %s", FLAG_NAME(1<<flagi, flags8));
 		Printf("\nBounce flags: %x\nBounce factors: f:%f, w:%f", 
 			query->BounceFlags.GetValue(), FIXED2FLOAT(query->bouncefactor),
 			FIXED2FLOAT(query->wallbouncefactor));
