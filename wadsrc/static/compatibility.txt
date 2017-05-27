@@ -492,6 +492,12 @@ AB24AE6E2CB13CBDD04600A4D37F9189 // doom2.wad map02
 {
 	setsectorspecial 147 0
 }
+0D491365C1B88B7D1B603890100DD03E // doom2.wad map18
+{
+	// missing textures
+	setwalltexture 451 front mid DOORSTOP
+	setwalltexture 459 front mid DOORSTOP
+}
 EBDAC00E9D25D884B2C8F4B1F0390539 // doom2.wad map21
 {
 	// push ceiling down in glitchy sectors above the stair switches
