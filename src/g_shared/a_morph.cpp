@@ -90,6 +90,8 @@ bool P_MorphPlayer (player_t *activator, player_t *p, const PClass *spawntype, i
 	morphed->angle = actor->angle;
 	morphed->target = actor->target;
 	morphed->tracer = actor;
+	morphed->FriendPlayer = actor->FriendPlayer;
+	morphed->DesignatedTeam = actor->DesignatedTeam;
 	morphed->Score = actor->Score;
 	p->PremorphWeapon = p->ReadyWeapon;
 	morphed->special2 = actor->flags & ~MF_JUSTHIT;
