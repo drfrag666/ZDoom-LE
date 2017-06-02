@@ -262,7 +262,19 @@ IWad
 		          "E3M1","E3M2","E3M3","E3M4","E3M5","E3M6","E3M7","E3M8","E3M9",
 		          "DPHOOF","BFGGA0","HEADA1","CYBRA1","SPIDA1D1", "E4M2",
 		          "DMENUPIC", "M_ACPT", "M_CAN", "M_EXITO", "M_CHG"
-	BannerColors = "54 54 54", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
+}
+
+IWad
+{
+	Name = "DOOM: Complete: WadSmoosh"
+	Autoname = "doom.doom2.wadsmoosh"
+	Game = "Doom"
+	Config = "Doom"
+	Mapinfo = "mapinfo/doom2.txt"
+	Compatibility = "Shorttex"
+	MustContain = "SMOOSHED", "ANIMDEFS", "LANGUAGE", "MAPINFO", "ENDOOM", "M_DOOM", "TITLEPIC", "TEXTURES"
+	BannerColors = "f0 f0 00", "00 00 a4"
 }
 
 IWad
@@ -337,7 +349,7 @@ IWad
 	Mapinfo = "mapinfo/doom2bfg.txt"
 	Compatibility = "Shorttex"
 	MustContain = "MAP01", "DMENUPIC", "M_ACPT", "M_CAN", "M_EXITO", "M_CHG"
-	BannerColors = "a8 00 00", "a8 a8 a8"
+	BannerColors = "f0 f0 00", "00 00 a4"
 	Load = "nerve.wad"
 }
 
@@ -358,6 +370,7 @@ IWad
 
 Names
 {	
+	"doom_complete.pk3"
 	"bfgdoom2.wad"
 	"doom2bfg.wad"
 	"doom2f.wad"
