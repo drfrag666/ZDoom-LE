@@ -97,6 +97,20 @@ EXTERN_CVAR(Bool, r_shadercolormaps)
 EXTERN_CVAR(Int, r_drawfuzz)
 EXTERN_CVAR(Bool, r_deathcamera);
 
+double sprite_distance_cull = 1e16;
+
+CUSTOM_CVAR(Float, r_spritedistancecull, 4000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+{
+	if (r_spritedistancecull > 0.0)
+	{
+		sprite_distance_cull = r_spritedistancecull * r_spritedistancecull;
+	}
+	else
+	{
+		sprite_distance_cull = 1e16;
+	}
+}
+
 //
 // Sprite rotation 0 is facing the viewer,
 //	rotation 1 is one angle turn CLOCKWISE around the axis.
@@ -681,6 +695,13 @@ void R_ProjectSprite (AActor *thing, int fakeside, F3DFloor *fakefloor, F3DFloor
 	{
 		return;
 	}
+
+	TVector3<double> ViewPos(viewx/double(FRACUNIT),viewy/double(FRACUNIT),viewz/double(FRACUNIT));
+	TVector3<double> ThingPos(thing->Pos().x/double(FRACUNIT),thing->Pos().y/double(FRACUNIT),thing->Pos().z/double(FRACUNIT));
+	
+	double distanceSquared = (ThingPos - ViewPos).LengthSquared();
+	if (distanceSquared > sprite_distance_cull)
+		return;
 
 	// [RH] Interpolate the sprite's position to make it look smooth
 	fixedvec3 pos = thing->InterpolatedPosition(r_TicFrac);
