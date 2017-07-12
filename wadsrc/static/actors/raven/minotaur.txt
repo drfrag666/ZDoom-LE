@@ -22,6 +22,8 @@ ACTOR Minotaur native
 	ActiveSound "minotaur/active"
 	DropItem "ArtiSuperHealth", 51
 	DropItem "PhoenixRodAmmo", 84, 10
+	Obituary "$OB_MINOTAUR"
+	HitObituary "$OB_MINOTAURHIT"
 
 	action native A_MinotaurDecide();
 	action native A_MinotaurAtk1();
