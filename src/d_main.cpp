@@ -711,6 +711,7 @@ void D_Display ()
 	else if (gamestate != wipegamestate && gamestate != GS_FULLCONSOLE && gamestate != GS_TITLELEVEL)
 	{ // save the current screen if about to wipe
 		V_SetBorderNeedRefresh();
+		R_InitSkyMap(); // else the sky looks bad after restoring the low detail modes
 		switch (wipegamestate)
 		{
 		default:
