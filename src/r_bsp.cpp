@@ -62,6 +62,7 @@ side_t* 		sidedef;
 line_t* 		linedef;
 sector_t*		frontsector;
 sector_t*		backsector;
+sector_t*		fcfrontsector;
 
 // killough 4/7/98: indicates doors closed wrt automap bugfix:
 int				doorclosed;
@@ -76,6 +77,11 @@ extern short	walltop[MAXWIDTH];	// [RH] record max extents of wall
 extern short	wallbottom[MAXWIDTH];
 extern short	wallupper[MAXWIDTH];
 extern short	walllower[MAXWIDTH];
+short	fcwalltop[MAXWIDTH];
+short	fcwallbottom[MAXWIDTH];
+
+visplane_t 				*fcfloorplane;
+visplane_t 				*fcceilingplane;
 
 fixed_t			rw_backcz1, rw_backcz2;
 fixed_t			rw_backfz1, rw_backfz2;
@@ -104,6 +110,20 @@ TArray<size_t> WallMirrors;
 static subsector_t *InSubsector;
 
 CVAR (Bool, r_drawflat, false, 0)		// [RH] Don't texture segs?
+
+double line_distance_cull = 1e16;
+
+CUSTOM_CVAR(Float, r_linedistancecull, 8000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+{
+	if (r_linedistancecull > 0.0)
+	{
+		line_distance_cull = r_linedistancecull * r_linedistancecull;
+	}
+	else
+	{
+		line_distance_cull = 1e16;
+	}
+}
 
 
 void R_StoreWallRange (int start, int stop);
@@ -158,7 +178,7 @@ static cliprange_t		solidsegs[MAXWIDTH/2+2];
 //
 //==========================================================================
 
-bool R_ClipWallSegment (int first, int last, bool solid)
+bool R_ClipWallSegment (int first, int last, bool solid, bool farclip)
 {
 	cliprange_t *next, *start;
 	int i, j;
@@ -176,7 +196,10 @@ bool R_ClipWallSegment (int first, int last, bool solid)
 		if (last <= start->first)
 		{
 			// Post is entirely visible (above start).
-			R_StoreWallRange (first, last);
+			if (!farclip)
+				R_StoreWallRange (first, last);
+			else
+				R_AddFarClipWallSegment(first, last);
 			if (fake3D & FAKE3D_FAKEMASK)
 			{
 				return true;
@@ -206,7 +229,10 @@ bool R_ClipWallSegment (int first, int last, bool solid)
 		}
 
 		// There is a fragment above *start.
-		R_StoreWallRange (first, start->first);
+		if (!farclip)
+			R_StoreWallRange (first, start->first);
+		else
+			R_AddFarClipWallSegment(first, start->first);
 
 		// Adjust the clip size for solid walls
 		if (solid && !(fake3D & FAKE3D_FAKEMASK))
@@ -223,7 +249,10 @@ bool R_ClipWallSegment (int first, int last, bool solid)
 	while (last >= (next+1)->first)
 	{
 		// There is a fragment between two posts.
-		R_StoreWallRange (next->last, (next+1)->first);
+		if (!farclip)
+			R_StoreWallRange (next->last, (next+1)->first);
+		else
+			R_AddFarClipWallSegment(next->last, (next+1)->first);
 		next++;
 		
 		if (last <= next->last)
@@ -235,7 +264,10 @@ bool R_ClipWallSegment (int first, int last, bool solid)
 	}
 
 	// There is a fragment after *next.
-	R_StoreWallRange (next->last, last);
+	if (!farclip)
+		R_StoreWallRange (next->last, last);
+	else
+		R_AddFarClipWallSegment(next->last, last);
 
 crunch:
 	if (fake3D & FAKE3D_FAKEMASK)
@@ -297,6 +329,92 @@ void R_ClearClipSegs (short left, short right)
 	solidsegs[1].first = right;
 	solidsegs[1].last = 0x7fff;		// new short limit --  killough
 	newend = solidsegs+2;
+}
+
+
+// FarClipLine
+void R_AddFarClipLine(seg_t *line)
+{
+	fixed_t			tx1, tx2, ty1, ty2;
+
+	fcfrontsector = InSubsector->sector;
+	fcfloorplane = floorplane;
+	fcceilingplane = ceilingplane;
+
+	tx1 = line->v1->x - viewx;
+	tx2 = line->v2->x - viewx;
+	ty1 = line->v1->y - viewy;
+	ty2 = line->v2->y - viewy;
+
+	// Reject lines not facing viewer
+	if (DMulScale32 (ty1, tx1-tx2, tx1, ty2-ty1) >= 0)
+		return;
+
+	if (WallC.Init(tx1, ty1, tx2, ty2, 32))
+		return;
+
+	if (WallC.sx1 >= WindowRight || WallC.sx2 <= WindowLeft)
+		return;
+
+	if (line->linedef == NULL)
+		return;
+
+	R_ClipWallSegment (WallC.sx1, WallC.sx2, true, true);
+}
+
+void R_AddFarClipWallSegment(int x1, int x2)
+{
+	//WallMost (fcwalltop, fcfrontsector->ceilingplane, &WallC);
+	WallMost (fcwallbottom, fcfrontsector->floorplane, &WallC);
+	memcpy(fcwalltop, fcwallbottom, sizeof(short) * MAXWIDTH);
+
+	// clip wall to the floor and ceiling
+	for (int x = x1; x < x2; ++x)
+	{
+		if (fcwalltop[x] < ceilingclip[x])
+		{
+			fcwalltop[x] = ceilingclip[x];
+		}
+		if (fcwallbottom[x] > floorclip[x])
+		{
+			fcwallbottom[x] = floorclip[x];
+		}
+	}
+
+	if (fcceilingplane)
+	{
+		fcceilingplane = R_CheckPlane (fcceilingplane, x1, x2);
+
+		for (int x = x1; x < x2; ++x)
+		{
+			short top = (fakeFloor && fake3D & 2) ? fakeFloor->ceilingclip[x] : ceilingclip[x];
+			short bottom = MIN(fcwalltop[x], floorclip[x]);
+			if (top < bottom)
+			{
+				fcceilingplane->top[x] = top;
+				fcceilingplane->bottom[x] = bottom;
+			}
+		}
+	}
+
+	if (fcfloorplane)
+	{
+		fcfloorplane = R_CheckPlane (fcfloorplane, x1, x2);
+		
+		for (int x = x1; x < x2; ++x)
+		{
+			short top = MAX(fcwallbottom[x], ceilingclip[x]);
+			short bottom = (fakeFloor && fake3D & 1) ? fakeFloor->floorclip[x] : floorclip[x];
+			if (top < bottom)
+			{
+				assert(bottom <= viewheight);
+				fcfloorplane->top[x] = top;
+				fcfloorplane->bottom[x] = bottom;
+			}
+		}
+	}
+	
+	return;
 }
 
 
@@ -735,7 +853,7 @@ void R_AddLine (seg_t *line)
 #endif
 	}
 
-	if (R_ClipWallSegment (WallC.sx1, WallC.sx2, solid))
+	if (R_ClipWallSegment (WallC.sx1, WallC.sx2, solid, false))
 	{
 		InSubsector->flags |= SSECF_DRAWN;
 	}
@@ -1310,9 +1428,19 @@ void R_Subsector (subsector_t *sub)
 	count = sub->numlines;
 	line = sub->firstline;
 
+	TVector2<double> viewpointPos(viewx/double(FRACUNIT),viewy/double(FRACUNIT));
+	TVector2<double> fPos1(line->v1->x/double(FRACUNIT),line->v1->y/double(FRACUNIT));
+	TVector2<double> fPos2(line->v2->x/double(FRACUNIT),line->v2->y/double(FRACUNIT));
+
 	while (count--)
 	{
-		if (!outersubsector || line->sidedef == NULL || !(line->sidedef->Flags & WALLF_POLYOBJ))
+		double dist1 = (fPos1 - viewpointPos).LengthSquared();
+		double dist2 = (fPos2 - viewpointPos).LengthSquared();
+		if (dist1 > line_distance_cull && dist2 > line_distance_cull)
+		{
+			R_AddFarClipLine(line);
+		}
+		else if (!outersubsector || line->sidedef == NULL || !(line->sidedef->Flags & WALLF_POLYOBJ))
 		{
 			// kg3D - fake planes bounding calculation
 			if (r_3dfloors && line->backsector && frontsector->e && line->backsector->e->XFloor.ffloors.Size())
