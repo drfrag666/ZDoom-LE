@@ -1297,3 +1297,12 @@ CCMD(idclip)
 	Net_WriteByte (DEM_GENERICCHEAT);
 	Net_WriteByte (CHT_NOCLIP);
 }
+
+EXTERN_CVAR(Float, r_spritedistancecull)
+EXTERN_CVAR(Float, r_linedistancecull)
+
+CCMD(nocull)
+{
+		r_spritedistancecull = 0.0;
+		r_linedistancecull = 0.0;
+}

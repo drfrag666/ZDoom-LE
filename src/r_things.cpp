@@ -97,6 +97,8 @@ EXTERN_CVAR(Bool, r_shadercolormaps)
 EXTERN_CVAR(Int, r_drawfuzz)
 EXTERN_CVAR(Bool, r_deathcamera);
 
+EXTERN_CVAR(Float, r_spritedistancecull)
+
 double sprite_distance_cull = 1e16;
 
 CUSTOM_CVAR(Float, r_spritedistancecull, 4000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)

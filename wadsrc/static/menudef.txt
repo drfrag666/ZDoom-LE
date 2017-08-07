@@ -683,9 +683,13 @@ OptionMenu "VideoOptions"
 	Option "Vertical Sync",				"vid_vsync", "OnOff"
 	Option "Rendering Interpolation",	"cl_capfps", "OffOn"
 	Option "Column render mode",		"r_columnmethod", "ColumnMethods"
-    Option "Detail mode",				"r_detail",		  "DetailModes"
-	
-//	StaticText " "
+	StaticText " "
+	Option "Detail mode",				"r_detail",	"DetailModes"
+	Slider "Sprite Cull Distance",		"r_spritedistancecull",	2000.0, 8000.0, 500.0, 0
+	Slider "Wall Cull Distance",		"r_linedistancecull",	4000.0, 16000.0, 1000.0, 0
+	Command "Disable Render Culling",	"nocull"
+
+	StaticText " "
 	Option "Screen wipe style",			"wipetype", "Wipes"
 
 	IfOption(Windows)
