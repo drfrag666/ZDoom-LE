@@ -5517,9 +5517,9 @@ static void DoKill(AActor *killtarget, AActor *self, FName damagetype, int flags
 	{
 		int dmgFlags = DMG_NO_ARMOR | DMG_NO_FACTOR;
 
-		if (KILS_FOILINVUL)
+		if (flags & KILS_FOILINVUL)
 			dmgFlags |= DMG_FOILINVUL;
-		if (KILS_FOILBUDDHA)
+		if (flags & KILS_FOILBUDDHA)
 			dmgFlags |= DMG_FOILBUDDHA;
 
 	
