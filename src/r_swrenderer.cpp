@@ -167,7 +167,7 @@ void FSoftwareRenderer::DrawRemainingPlayerSprites()
 // Get max. view angle (renderer specific information so it goes here now)
 //
 //===========================================================================
-#define MAX_DN_ANGLE	56		// Max looking down angle
+#define MAX_DN_ANGLE	48		// Max looking down angle
 #define MAX_UP_ANGLE	32		// Max looking up angle
 
 int FSoftwareRenderer::GetMaxViewPitch(bool down)
