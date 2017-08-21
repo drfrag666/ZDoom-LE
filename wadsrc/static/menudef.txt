@@ -687,7 +687,7 @@ OptionMenu "VideoOptions"
 	Option "Detail mode",				"r_detail",	"DetailModes"
 	Slider "Sprite Cull Distance",		"r_spritedistancecull",	2000.0, 8000.0, 500.0, 0
 	Slider "Wall Cull Distance",		"r_linedistancecull",	4000.0, 16000.0, 1000.0, 0
-	Command "Disable Render Culling",	"nocull"
+	Command "Disable Render Culling",	"culloff"
 
 	StaticText " "
 	Option "Screen wipe style",			"wipetype", "Wipes"
