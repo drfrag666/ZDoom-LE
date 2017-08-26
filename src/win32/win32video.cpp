@@ -129,7 +129,20 @@ IDirect3DDevice9 *D3Device;
 #endif
 HANDLE FPSLimitEvent;
 
-CVAR (Bool, vid_forceddraw, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+int currentbackend = 0;
+
+CUSTOM_CVAR (Bool, vid_forceddraw, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+{
+	if (self != currentbackend)
+	{
+		if (self)
+			Printf("Forcing DirectDraw. ");
+		else
+			Printf("Enabling Direct3D if available. ");
+		Printf("You must restart " GAMENAME " to switch the renderer.\n");
+	}
+	currentbackend=self;
+}
 CVAR (Int, vid_adapter, 1, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CUSTOM_CVAR (Int, vid_maxfps, 200, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 {
