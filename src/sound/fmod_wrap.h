@@ -79,17 +79,29 @@ namespace FMOD
 		  FMOD_RESULT getOutput              (FMOD_OUTPUTTYPE *output) { return FMOD_System_GetOutput(this, output); }
 		  FMOD_RESULT getNumDrivers          (int *numdrivers) { return FMOD_System_GetNumDrivers(this, numdrivers); }
 		  FMOD_RESULT getDriverInfo          (int id, char *name, int namelen, FMOD_GUID *guid) { return FMOD_System_GetDriverInfo(this, id, name, namelen, guid); }
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getDriverCaps          (int id, FMOD_CAPS *caps, int *minfrequency, int *maxfrequency, FMOD_SPEAKERMODE *controlpanelspeakermode) { return FMOD_System_GetDriverCaps(this, id, caps, minfrequency, maxfrequency, controlpanelspeakermode); }
+#else
+		  FMOD_RESULT getDriverCaps          (int id, FMOD_CAPS *caps, int *controlpaneloutputrate, FMOD_SPEAKERMODE *controlpanelspeakermode) { return FMOD_System_GetDriverCaps(this, id, caps, controlpaneloutputrate, controlpanelspeakermode); }
+#endif 
 		  FMOD_RESULT setDriver              (int driver) { return FMOD_System_SetDriver(this, driver); }
 		  FMOD_RESULT getDriver              (int *driver) { return FMOD_System_GetDriver(this, driver); }
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT setHardwareChannels    (int min2d, int max2d, int min3d, int max3d) { return FMOD_System_SetHardwareChannels(this, min2d, max2d, min3d, max3d); }
+#else
+		  FMOD_RESULT setHardwareChannels    (int numhardwarechannels) { return FMOD_System_SetHardwareChannels(this, numhardwarechannels); }
+#endif
 		  FMOD_RESULT setSoftwareChannels    (int numsoftwarechannels) { return FMOD_System_SetSoftwareChannels(this, numsoftwarechannels); }
 		  FMOD_RESULT getSoftwareChannels    (int *numsoftwarechannels) { return FMOD_System_GetSoftwareChannels(this, numsoftwarechannels); }
 		  FMOD_RESULT setSoftwareFormat      (int samplerate, FMOD_SOUND_FORMAT format, int numoutputchannels, int maxinputchannels, FMOD_DSP_RESAMPLER resamplemethod) { return FMOD_System_SetSoftwareFormat(this, samplerate, format, numoutputchannels, maxinputchannels, resamplemethod); }
 		  FMOD_RESULT getSoftwareFormat      (int *samplerate, FMOD_SOUND_FORMAT *format, int *numoutputchannels, int *maxinputchannels, FMOD_DSP_RESAMPLER *resamplemethod, int *bits) { return FMOD_System_GetSoftwareFormat(this, samplerate, format, numoutputchannels, maxinputchannels, resamplemethod, bits); }
 		  FMOD_RESULT setDSPBufferSize       (unsigned int bufferlength, int numbuffers) { return FMOD_System_SetDSPBufferSize(this, bufferlength, numbuffers); }
 		  FMOD_RESULT getDSPBufferSize       (unsigned int *bufferlength, int *numbuffers) { return FMOD_System_GetDSPBufferSize(this, bufferlength, numbuffers); }
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT setFileSystem          (FMOD_FILE_OPENCALLBACK useropen, FMOD_FILE_CLOSECALLBACK userclose, FMOD_FILE_READCALLBACK userread, FMOD_FILE_SEEKCALLBACK userseek, int blockalign) { return FMOD_System_SetFileSystem(this, useropen, userclose, userread, userseek, blockalign); }
+#else
+		  FMOD_RESULT setFileSystem          (FMOD_FILE_OPENCALLBACK useropen, FMOD_FILE_CLOSECALLBACK userclose, FMOD_FILE_READCALLBACK userread, FMOD_FILE_SEEKCALLBACK userseek, FMOD_FILE_ASYNCREADCALLBACK userasyncread, FMOD_FILE_ASYNCCANCELCALLBACK userasynccancel, int blockalign) { return FMOD_System_SetFileSystem(this, useropen, userclose, userread, userseek, userasyncread, userasynccancel, blockalign); }
+#endif
 		  FMOD_RESULT attachFileSystem       (FMOD_FILE_OPENCALLBACK useropen, FMOD_FILE_CLOSECALLBACK userclose, FMOD_FILE_READCALLBACK userread, FMOD_FILE_SEEKCALLBACK userseek) { return FMOD_System_AttachFileSystem(this, useropen, userclose, userread, userseek); }
 		  FMOD_RESULT setAdvancedSettings    (FMOD_ADVANCEDSETTINGS *settings) { return FMOD_System_SetAdvancedSettings(this, settings); }
 		  FMOD_RESULT getAdvancedSettings    (FMOD_ADVANCEDSETTINGS *settings) { return FMOD_System_GetAdvancedSettings(this, settings); }
@@ -132,8 +144,12 @@ namespace FMOD
 		  FMOD_RESULT getVersion             (unsigned int *version) { return FMOD_System_GetVersion(this, version); }
 		  FMOD_RESULT getOutputHandle        (void **handle) { return FMOD_System_GetOutputHandle(this, handle); }
 		  FMOD_RESULT getChannelsPlaying     (int *channels) { return FMOD_System_GetChannelsPlaying(this, channels); }
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getHardwareChannels    (int *num2d, int *num3d, int *total) { return FMOD_System_GetHardwareChannels(this, num2d, num3d, total); }
-#if FMOD_VERSION < 0x42501
+#else
+		  FMOD_RESULT getHardwareChannels    (int *numhardwarechannels) { return FMOD_System_GetHardwareChannels(this, numhardwarechannels); }
+#endif
+		  #if FMOD_VERSION < 0x42501
 		  FMOD_RESULT getCPUUsage            (float *dsp, float *stream, float *update, float *total) { return FMOD_System_GetCPUUsage(this, dsp, stream, update, total); }
 #else
 		  FMOD_RESULT getCPUUsage            (float *dsp, float *stream, float *geometry, float *update, float *total) { return FMOD_System_GetCPUUsage(this, dsp, stream, geometry, update, total); }
@@ -197,8 +213,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_System_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_System_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_System_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused,  FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_System_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 	/*
@@ -237,7 +256,11 @@ namespace FMOD
 		  FMOD_RESULT getNumSubSounds        (int *numsubsounds) { return FMOD_Sound_GetNumSubSounds(this, numsubsounds); }
 		  FMOD_RESULT getNumTags             (int *numtags, int *numtagsupdated) { return FMOD_Sound_GetNumTags(this, numtags, numtagsupdated); }
 		  FMOD_RESULT getTag                 (const char *name, int index, FMOD_TAG *tag) { return FMOD_Sound_GetTag(this, name, index, tag); }
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getOpenState           (FMOD_OPENSTATE *openstate, unsigned int *percentbuffered, bool *starving) { FMOD_BOOL b; FMOD_RESULT res = FMOD_Sound_GetOpenState(this, openstate, percentbuffered, &b); *starving = b; return res; }
+#else
+		  FMOD_RESULT getOpenState           (FMOD_OPENSTATE *openstate, unsigned int *percentbuffered, bool *starving, bool *diskbusy) { FMOD_BOOL b; FMOD_BOOL c; FMOD_RESULT res = FMOD_Sound_GetOpenState(this, openstate, percentbuffered, &b, &c); *starving = b; *diskbusy=c; return res; }
+#endif
 		  FMOD_RESULT readData               (void *buffer, unsigned int lenbytes, unsigned int *read) { return FMOD_Sound_ReadData(this, buffer, lenbytes, read); }
 		  FMOD_RESULT seekData               (unsigned int pcm) { return FMOD_Sound_SeekData(this, pcm); }
 
@@ -262,8 +285,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_Sound_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_Sound_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_Sound_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_Sound_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 	/*
@@ -355,8 +381,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_Channel_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_Channel_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_Channel_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_Channel_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 	/*
@@ -414,8 +443,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData             (void *userdata) { return FMOD_ChannelGroup_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData             (void **userdata) { return FMOD_ChannelGroup_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo           (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_ChannelGroup_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo           (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_ChannelGroup_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 	/*
@@ -452,8 +484,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_SoundGroup_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_SoundGroup_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_SoundGroup_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_SoundGroup_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 	/*
@@ -505,8 +540,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_DSP_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_DSP_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_DSP_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_DSP_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 
@@ -532,8 +570,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData           (void *userdata) { return FMOD_DSPConnection_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData           (void **userdata) { return FMOD_DSPConnection_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo         (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_DSPConnection_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo         (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_DSPConnection_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 
@@ -575,8 +616,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_Geometry_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_Geometry_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_Geometry_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_Geometry_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 
 
@@ -605,8 +649,11 @@ namespace FMOD
 		// Userdata set/get.
 		  FMOD_RESULT setUserData            (void *userdata) { return FMOD_Reverb_SetUserData(this, userdata); }
 		  FMOD_RESULT getUserData            (void **userdata) { return FMOD_Reverb_GetUserData(this, userdata); }
-
+#if FMOD_VERSION < 0x43600
 		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, unsigned int *memoryused_array) { return FMOD_Reverb_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_array); }
+#else
+		  FMOD_RESULT getMemoryInfo          (unsigned int memorybits, unsigned int event_memorybits, unsigned int *memoryused, FMOD_MEMORY_USAGE_DETAILS *memoryused_details) { return FMOD_Reverb_GetMemoryInfo(this, memorybits, event_memorybits, memoryused, memoryused_details); }
+#endif
 	};
 }
 
