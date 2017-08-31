@@ -1248,22 +1248,31 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 
 	// calculate edges of the shape
 	tx = sx-((320/2)<<FRACBITS);
+	tx -= tex->GetScaledLeftOffset() << FRACBITS;
 
-	tx -= tex->GetScaledLeftOffset() << FRACBITS;	
-	if (r_detail == 0 || r_detail == 2)
+	if (r_detail == 0 || r_detail == 2 || bRenderingToCanvas)
+	{
 		x1 = (centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS;
+	}
 	else
+	{
 		x1 = (centerxfrac + FixedMul (tx, pspritexscale/2)) >>FRACBITS;
+	}
 
 	// off the right side
 	if (x1 > viewwidth)
 		return; 
 
 	tx += tex->GetScaledWidth() << FRACBITS;
-	if (r_detail == 0 || r_detail == 2)
+
+	if (r_detail == 0 || r_detail == 2 || bRenderingToCanvas)
+	{
 		x2 = (centerxfrac + FixedMul (tx, pspritexscale)) >>FRACBITS;
+	}
 	else
+	{
 		x2 = (centerxfrac + FixedMul (tx, pspritexscale/2)) >>FRACBITS;
+	}
 
 	// off the left side
 	if (x2 <= 0)
@@ -1305,28 +1314,41 @@ void R_DrawPSprite (pspdef_t* psp, int pspnum, AActor *owner, fixed_t sx, fixed_
 	vis->x1 = x1 < 0 ? 0 : x1;
 	vis->x2 = x2 >= viewwidth ? viewwidth : x2;
 	vis->xscale = DivScale16(pspritexscale, tex->xScale);
-	if (r_detail == 0 || r_detail == 2)
+
+	if (r_detail == 0 || r_detail == 2 || bRenderingToCanvas)
+	{
 		vis->yscale = DivScale16(pspriteyscale, tex->yScale);
+	}
 	else
+	{
 		vis->yscale = DivScale16(pspriteyscale/2, tex->yScale);
+	}
 	vis->Translation = 0;		// [RH] Use default colors
 	vis->pic = tex;
 	vis->ColormapNum = 0;
 
 	if (flip)
 	{
-		if (r_detail == 0 || r_detail == 2)
+		if (r_detail == 0 || r_detail == 2 || bRenderingToCanvas)
+		{
 			vis->xiscale = -MulScale16(pspritexiscale, tex->xScale);
+		}
 		else
+		{
 			vis->xiscale = -MulScale16(pspritexiscale*2, tex->xScale);
+		}
 		vis->startfrac = (tex->GetWidth() << FRACBITS) - 1;
 	}
 	else
 	{
-		if (r_detail == 0 || r_detail == 2)
+		if (r_detail == 0 || r_detail == 2 || bRenderingToCanvas)
+		{
 			vis->xiscale = MulScale16(pspritexiscale, tex->xScale);
+		}
 		else
+		{
 			vis->xiscale = MulScale16(pspritexiscale*2, tex->xScale);
+		}
 		vis->startfrac = 0;
 	}
 
