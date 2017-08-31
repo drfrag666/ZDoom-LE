@@ -2833,7 +2833,7 @@ void FBehavior::StartTypedScripts (WORD type, AActor *activator, bool always, in
 		{
 			DLevelScript *runningScript = P_GetScriptGoing (activator, NULL, ptr->Number,
 				ptr, this, &arg1, 1, always ? ACS_ALWAYS : 0);
-			if (runNow)
+			if (runningScript != NULL && runNow)
 			{
 				runningScript->RunScript ();
 			}
