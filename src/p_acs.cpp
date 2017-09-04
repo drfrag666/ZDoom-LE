@@ -7924,7 +7924,10 @@ scriptwait:
 				if (pcd == PCD_ENDPRINTBOLD || screen == NULL ||
 					screen->CheckLocalView (consoleplayer))
 				{
-					C_MidPrint (activefont, work);
+					if (pcd == PCD_ENDPRINTBOLD)
+						C_MidPrintBold (activefont, work);
+					else
+						C_MidPrint (activefont, work);
 				}
 				STRINGBUILDER_FINISH(work);
 			}
