@@ -2141,7 +2141,8 @@ static void PutSaveComment (FILE *file)
 
 	// Get level name
 	//strcpy (comment, level.level_name);
-	mysnprintf(comment, countof(comment), "%s - %s", level.MapName.GetChars(), level.LevelName.GetChars());
+	//mysnprintf(comment, countof(comment), "%s - %s", level.MapName.GetChars(), level.LevelName.GetChars());
+	mysnprintf(comment, countof(comment), "%s", level.MapName.GetChars());
 	len = (WORD)strlen (comment);
 	comment[len] = '\n';
 
