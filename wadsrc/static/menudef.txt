@@ -759,6 +759,10 @@ OptionValue TextColors
 	19.0, "\ctpurple"
 	20.0, "\cudark gray"
 	21.0, "\cvcyan"
+	22.0, "\cwice"
+	23.0, "\cxfire"
+	24.0, "\cysapphire"
+	25.0, "\czteal"
 }
 
 OptionValue Crosshairs
