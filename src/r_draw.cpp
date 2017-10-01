@@ -2296,7 +2296,54 @@ void R_DetailDouble ()
 			}
 		}
 		break;
-	}	
+	case 5:		// x-triple and y-double
+		{
+			int rowsize = viewwidth;
+			int realpitch = RenderTarget->GetPitch();
+			int pitch = realpitch << 1;
+			int y,x;
+			BYTE *linefrom, *lineto;
+			BYTE c;
+			int offset = viewwidth > 320 ? CPU.DataL1LineSize : 0;
+
+			linefrom = dc_destorg;
+			for (y = 0; y < viewheight; ++y, linefrom += pitch)
+			{
+				if (y > 0)
+				{
+					lineto = linefrom - viewwidth*3 - offset;
+				}
+				else
+				{
+					lineto = linefrom - viewwidth;
+				}
+				for (x = 0; x < rowsize-3; x=x+3)
+				{
+					c = linefrom[x];
+					lineto[x*2] = c;
+					lineto[x*2+1] = c;
+					lineto[x*2+2] = c;
+					c = linefrom[x+1];
+					lineto[x*2+3] = c;
+					lineto[x*2+4] = c;
+					lineto[x*2+5] = c;
+				}
+				x = rowsize-1;
+				if (viewwidth >= 200)
+				{
+					c = linefrom[x-2];
+					lineto[x*2-2] = c;
+					lineto[x*2-1] = c;
+				}
+				c = linefrom[x-1];
+				lineto[x*2] = c;
+				lineto[x*2+1] = c;
+				memcpy (lineto+realpitch, lineto, rowsize*2);
+			}
+			memcpy (lineto+realpitch*2, lineto, rowsize*2);
+		}
+		break;
+	}
 	DetailDoubleCycles.Unclock();
 }
 
