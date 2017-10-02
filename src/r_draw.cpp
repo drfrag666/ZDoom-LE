@@ -2307,16 +2307,9 @@ void R_DetailDouble ()
 			int offset = viewwidth > 320 ? CPU.DataL1LineSize : 0;
 
 			linefrom = dc_destorg;
-			for (y = 0; y < viewheight; ++y, linefrom += pitch)
+			lineto = linefrom - viewwidth;
+			for (y = 0; y < viewheight; ++y)
 			{
-				if (y > 0)
-				{
-					lineto = linefrom - viewwidth*3 - offset;
-				}
-				else
-				{
-					lineto = linefrom - viewwidth;
-				}
 				for (x = 0; x < rowsize-3; x=x+3)
 				{
 					c = linefrom[x];
@@ -2339,8 +2332,10 @@ void R_DetailDouble ()
 				lineto[x*2] = c;
 				lineto[x*2+1] = c;
 				memcpy (lineto+realpitch, lineto, rowsize*2);
+
+				linefrom += pitch;
+				lineto = linefrom - viewwidth*3 - offset;
 			}
-			memcpy (lineto+realpitch*2, lineto, rowsize*2);
 		}
 		break;
 	}
