@@ -602,6 +602,7 @@ OptionValue DetailModes
 	3.0, "Double Horiz and Vert"
 	4.0, "Quad Horiz and Double Vert"
 	5.0, "Triple Horiz and Double Vert"
+	6.0, "Quad Horiz and Vert"
 }
 
 OptionValue ColumnMethods 
