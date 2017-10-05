@@ -140,6 +140,7 @@ BYTE identitymap[256];
 
 EXTERN_CVAR (Int, r_columnmethod)
 EXTERN_CVAR (Int, r_detail)
+EXTERN_CVAR (Int, screenblocks)
 
 
 void R_InitShadeMaps()
@@ -2304,8 +2305,12 @@ void R_DetailDouble ()
 			int y,x;
 			BYTE *linefrom, *lineto;
 			BYTE c;
-			int offset = viewwidth > 320 ? CPU.DataL1LineSize : 0;
+			int offset = SCREENWIDTH > 640 ? CPU.DataL1LineSize : 0;
 
+			if (screenblocks <= 9)
+			{
+				offset = offset + (10-screenblocks)*(SCREENWIDTH/10) + SCREENWIDTH%10;
+			}
 			linefrom = dc_destorg;
 			lineto = linefrom - viewwidth;
 			for (y = 0; y < viewheight; ++y)
@@ -2346,8 +2351,12 @@ void R_DetailDouble ()
 			int y,x;
 			BYTE *linefrom, *lineto;
 			BYTE c;
-			int offset = viewwidth > 320 ? CPU.DataL1LineSize*2 : 0;
+			int offset = SCREENWIDTH > 640 ? CPU.DataL1LineSize*2 : 0;
 
+			if (screenblocks <= 9)
+			{
+				offset = offset + 2*(10-screenblocks)*(SCREENWIDTH/10) + 2*(SCREENWIDTH%10);
+			}
 			linefrom = dc_destorg;
 			lineto = linefrom - viewwidth;
 			for (y = 0; y < viewheight/2; ++y)
