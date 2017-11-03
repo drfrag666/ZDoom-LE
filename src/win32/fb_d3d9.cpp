@@ -2272,8 +2272,13 @@ bool D3DTex::Update()
 
 	assert(Box != NULL);
 	assert(Box->Owner != NULL);
-	assert(Box->Owner->Tex != NULL);
+	//assert(Box->Owner->Tex != NULL);
 	assert(GameTex != NULL);
+
+	if (Box->Owner->Tex == NULL)
+	{
+		return false;
+	}
 
 	if (FAILED(Box->Owner->Tex->GetLevelDesc(0, &desc)))
 	{
@@ -2781,7 +2786,7 @@ void STACK_ARGS D3DFB::DrawTextureV (FTexture *img, double x, double y, uint32 t
 
 	if (tex == NULL)
 	{
-		assert(tex != NULL);
+		//assert(tex != NULL);
 		return;
 	}
 
