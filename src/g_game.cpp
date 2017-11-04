@@ -2143,9 +2143,6 @@ static void PutSaveComment (FILE *file)
 	//strcpy (comment, level.level_name);
 	mysnprintf(comment, countof(comment), "%s - %s", level.MapName.GetChars(), level.LevelName.GetChars());
 	len = (WORD)strlen (comment);
-	int maxlen = strlen (level.MapName.GetChars()) == 5? 26 : 28;
-	if (len > (WORD)maxlen)
-		len = (WORD)maxlen;
 	comment[len] = '\n';
 
 	// Append elapsed time
