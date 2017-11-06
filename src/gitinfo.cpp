@@ -44,22 +44,38 @@ const char *GetGitDescription()
 
 const char *GetGitHash()
 {
-	return GIT_HASH;
+	const char *githash = GIT_HASH;
+	if (githash[0] == '0')
+	{
+		return "";
+	}
+	else
+	{
+		return GIT_HASH;
+	}
 }
 
 const char *GetGitTime()
 {
-	return GIT_TIME;
+	const char *gittime = GIT_TIME;
+	if (gittime[0] == '\0')
+	{
+		return __DATE__;
+	}
+	else
+	{
+		return GIT_TIME;
+	}
 }
 
 const char *GetVersionString()
 {
-//	if ((GetGitDescription()[0] == '\0') || (GetGitDescription()[1] == 'u'))
-//	{
+	if ((GetGitDescription()[0] == '\0') || ((GetGitDescription()[0] == '<') && (GetGitDescription()[1] == 'u')))
+	{
 		return VERSIONSTR;
-/*	}
+	}
 	else
 	{
 		return GIT_DESCRIPTION;
-	}*/
+	}
 }
