@@ -424,7 +424,7 @@ CCMD (gameversion)
 {
 	if (GetGitHash()[0] == '\0')
 	{
-		Printf ("%s r2.3 : %s\n", GetVersionString(), GetGitTime());
+		Printf ("%s : %s\n", GetVersionString(), GetGitTime());
 	}
 	else
 	{
