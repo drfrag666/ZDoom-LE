@@ -59,7 +59,7 @@
 //
 // Todo: Move these elsewhere
 //
-CVAR (Float, mouse_sensitivity, 1.f, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CVAR (Float, mouse_sensitivity, 1.5f, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR (Bool, show_messages, true, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR (Bool, show_obituaries, true, CVAR_ARCHIVE)
 
