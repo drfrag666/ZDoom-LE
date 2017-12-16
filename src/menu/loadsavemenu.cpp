@@ -183,8 +183,9 @@ int DLoadSaveMenu::InsertSaveNode (FSaveGameNode *node)
 		unsigned int i;
 		for(i = 0; i < SaveGames.Size(); i++)
 		{
-			if (SaveGames[i]->bOldVersion ||
-				stricmp (node->Title, SaveGames[i]->Title) <= 0)
+			if (//SaveGames[i]->bOldVersion ||
+				//stricmp (node->Title, SaveGames[i]->Title) <= 0)
+				stricmp (node->Filename, SaveGames[i]->Filename) <= 0)
 			{
 				break;
 			}
