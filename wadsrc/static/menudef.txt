@@ -1638,7 +1638,8 @@ OptionMenu AdvSoundOptions
 	TextField "Patch set", "fluid_patchset"
 	Slider "Gain",	"fluid_gain", 0, 10, 0.5, 1
 	Option "Reverb", "fluid_reverb", "OnOff"
-	Slider "MIDI voices", "fluid_voices", 16, 4096, 16, 1
+	Option "Chorus", "fluid_chorus", "OnOff"
+	Slider "MIDI voices", "fluid_voices", 16, 4096, 16, 0
 	// Leaving out the more advanced stuff for now.
 	StaticText " "
 	StaticText "Timidity++",	1
