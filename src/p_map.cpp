@@ -735,7 +735,7 @@ int P_GetMoveFactor(const AActor *mo, int *frictionp)
 //==========================================================================
 
 static // killough 3/26/98: make static
-bool PIT_CheckLine(line_t *ld, const FBoundingBox &box, FCheckPosition &tm)
+bool PIT_CheckLine(line_t *ld, const FBoundingBox &box, FCheckPosition &tm, const bool wasfit)
 {
 	bool rail = false;
 
@@ -764,7 +764,10 @@ bool PIT_CheckLine(line_t *ld, const FBoundingBox &box, FCheckPosition &tm)
 		{
 			P_DamageMobj(tm.thing, NULL, NULL, tm.thing->Mass >> 5, NAME_Melee);
 		}
-		tm.thing->BlockingLine = ld;
+		if (wasfit)
+		{
+			tm.thing->BlockingLine = ld;
+		}
 		CheckForPushSpecial(ld, 0, tm.thing, false);
 		return false;
 	}
@@ -795,7 +798,10 @@ bool PIT_CheckLine(line_t *ld, const FBoundingBox &box, FCheckPosition &tm)
 			{
 				P_DamageMobj(tm.thing, NULL, NULL, tm.thing->Mass >> 5, NAME_Melee);
 			}
-			tm.thing->BlockingLine = ld;
+			if (wasfit)
+			{
+				tm.thing->BlockingLine = ld;
+			}
 			// Calculate line side based on the actor's original position, not the new one.
 			CheckForPushSpecial(ld, P_PointOnLineSide(pos.x, pos.y, ld), tm.thing, false);
 			return false;
@@ -898,34 +904,38 @@ bool PIT_CheckLine(line_t *ld, const FBoundingBox &box, FCheckPosition &tm)
 		open.bottom += 32 * FRACUNIT;
 	}
 
-	// adjust floor / ceiling heights
-	if (open.top < tm.ceilingz)
+	if (wasfit)
 	{
-		tm.ceilingz = open.top;
-		tm.ceilingsector = open.topsec;
-		tm.ceilingpic = open.ceilingpic;
-		tm.ceilingline = ld;
-		tm.thing->BlockingLine = ld;
-	}
+		// adjust floor / ceiling heights
+		if (open.top < tm.ceilingz)
+		{
+			tm.ceilingz = open.top;
+			tm.ceilingsector = open.topsec;
+			tm.ceilingpic = open.ceilingpic;
+			tm.ceilingline = ld;
+			tm.thing->BlockingLine = ld;
+		}
 
-	if (open.bottom > tm.floorz)
-	{
-		tm.floorz = open.bottom;
-		tm.floorsector = open.bottomsec;
-		tm.floorpic = open.floorpic;
-		tm.floorterrain = open.floorterrain;
-		tm.touchmidtex = open.touchmidtex;
-		tm.abovemidtex = open.abovemidtex;
-		tm.thing->BlockingLine = ld;
+		if (open.bottom > tm.floorz)
+		{
+			tm.floorz = open.bottom;
+			tm.floorsector = open.bottomsec;
+			tm.floorpic = open.floorpic;
+			tm.floorterrain = open.floorterrain;
+			tm.touchmidtex = open.touchmidtex;
+			tm.abovemidtex = open.abovemidtex;
+			tm.thing->BlockingLine = ld;
+		}
+		else if (open.bottom == tm.floorz)
+		{
+			tm.touchmidtex |= open.touchmidtex;
+			tm.abovemidtex |= open.abovemidtex;
+		}
+		if (open.lowfloor < tm.dropoffz)
+		{
+			tm.dropoffz = open.lowfloor;
+		}
 	}
-	else if (open.bottom == tm.floorz)
-	{
-		tm.touchmidtex |= open.touchmidtex;
-		tm.abovemidtex |= open.abovemidtex;
-	}
-
-	if (open.lowfloor < tm.dropoffz)
-		tm.dropoffz = open.lowfloor;
 
 	// if contacted a special line, add it to the list
 	if (ld->special)
@@ -1599,7 +1609,7 @@ bool P_CheckPosition(AActor *thing, fixed_t x, fixed_t y, FCheckPosition &tm, bo
 
 	while ((ld = it.Next()))
 	{
-		good &= PIT_CheckLine(ld, box, tm);
+		good &= PIT_CheckLine(ld, box, tm, good);
 	}
 	if (!good)
 	{
@@ -4985,10 +4995,7 @@ bool P_AdjustFloorCeil(AActor *thing, FChangePosition *cpos)
 	}
 
 	bool isgood = P_CheckPosition(thing, thing->X(), thing->Y(), tm);
-
-	// This is essentially utterly broken because it even uses the return from a failed P_CheckPosition but the entire logic will break down if that isn't done.
-	// However, if tm.floorz is greater than tm.ceilingz we have a real problem that needs to be dealt with exolicitly.
-	if (!(thing->flags4 & MF4_ACTLIKEBRIDGE) && tm.floorz <= tm.ceilingz)
+	if (!(thing->flags4 & MF4_ACTLIKEBRIDGE))
 	{
 		thing->floorz = tm.floorz;
 		thing->ceilingz = tm.ceilingz;
