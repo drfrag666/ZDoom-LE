@@ -880,10 +880,10 @@ struct side_t
 		void InitFrom(const part &other)
 		{
 			if (texture.isNull()) texture = other.texture;
-			if (0.0 == xOffset) xOffset = other.xOffset;
-			if (0.0 == yOffset) yOffset = other.yOffset;
-			if (1.0 == xScale && 0.0 != other.xScale) xScale = other.xScale;
-			if (1.0 == yScale && 0.0 != other.yScale) yScale = other.yScale;
+			if (0 == xoffset) xoffset = other.xoffset;
+			if (0 == yoffset) yoffset = other.yoffset;
+			if (1 == xscale && 0 != other.xscale) xscale = other.xscale;
+			if (1 == yscale && 0 != other.yscale) yscale = other.yscale;
 		}
 	};
 
