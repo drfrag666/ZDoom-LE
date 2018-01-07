@@ -2667,7 +2667,7 @@ void D_DoomMain (void)
 //
 //==========================================================================
 
-CCMD(restart)
+UNSAFE_CCMD(restart)
 {
 	// remove command line args that would get in the way during restart
 	Args->RemoveArgs("-iwad");
