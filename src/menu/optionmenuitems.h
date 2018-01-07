@@ -37,7 +37,7 @@
 
 void M_DrawConText (int color, int x, int y, const char *str);
 void M_SetVideoMode();
-
+extern bool UnsafeExecutionContext;
 
 
 //=============================================================================
@@ -88,7 +88,9 @@ public:
 	bool Activate()
 	{
 		S_Sound (CHAN_VOICE | CHAN_UI, "menu/choose", snd_menuvolume, ATTN_NONE);
+		UnsafeExecutionContext = true;
 		C_DoCommand(mAction);
+		UnsafeExecutionContext = false;
 		return true;
 	}
 
@@ -113,7 +115,9 @@ public:
 	{
 		if (mkey == MKEY_MBYes)
 		{
+			UnsafeExecutionContext = true;
 			C_DoCommand(mAction);
+			UnsafeExecutionContext = false;
 			return true;
 		}
 		return FOptionMenuItemCommand::MenuEvent(mkey, fromcontroller);
