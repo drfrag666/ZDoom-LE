@@ -194,7 +194,7 @@ IMPLEMENT_CLASS (DWaitingCommand)
 void DWaitingCommand::Serialize (FArchive &arc)
 {
 	Super::Serialize (arc);
-	arc << Command << TicsLeft;
+	arc << Command << TicsLeft << IsUnsafe;
 }
 
 DWaitingCommand::DWaitingCommand ()
