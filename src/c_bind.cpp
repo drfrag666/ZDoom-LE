@@ -506,7 +506,7 @@ void C_UnbindAll ()
 	AutomapBindings.UnbindAll();
 }
 
-CCMD (unbindall)
+UNSAFE_CCMD (unbindall)
 {
 	C_UnbindAll ();
 }

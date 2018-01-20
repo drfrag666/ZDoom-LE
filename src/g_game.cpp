@@ -2502,7 +2502,7 @@ CCMD (playdemo)
 	}
 }
 
-CCMD (timedemo)
+UNSAFE_CCMD (timedemo)
 {
 	if (argv.argc() > 1)
 	{
