@@ -135,7 +135,7 @@ public:
 	{
 	}
 
-	virtual void Run (FCommandLine &args, APlayerPawn *instigator, int key) override;
+	virtual void Run (FCommandLine &args, APlayerPawn *instigator, int key); // override;
 };
 
 #define UNSAFE_CCMD(n) \
@@ -171,7 +171,7 @@ public:
 	{
 	}
 
-	virtual void Run (FCommandLine &args, APlayerPawn *instigator, int key) override;
+	virtual void Run (FCommandLine &args, APlayerPawn *instigator, int key); // override;
 };
 
 // Actions
