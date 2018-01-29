@@ -745,7 +745,7 @@ void M_ScreenShot (const char *filename)
 	}
 }
 
-CCMD (screenshot)
+UNSAFE_CCMD (screenshot)
 {
 	if (argv.argc() == 1)
 		G_ScreenShot (NULL);
