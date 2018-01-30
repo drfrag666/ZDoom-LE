@@ -2840,7 +2840,7 @@ CCMD (cd_resume)
 //
 //==========================================================================
 
-CCMD (playlist)
+UNSAFE_CCMD (playlist)
 {
 	int argc = argv.argc();
 
