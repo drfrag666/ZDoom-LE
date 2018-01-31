@@ -789,7 +789,14 @@ void I_StartupXInput()
 
 #else	// NO_XINPUT
 
+#define WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT 0x0501
+#include <windows.h>
+
+#define USE_WINDOWS_DWORD
 #include "i_input.h"
+
+CVAR(Bool, joy_xinput, false, CVAR_GLOBALCONFIG|CVAR_ARCHIVE|CVAR_NOINITCALL)
 
 void I_StartupXInput()
 {

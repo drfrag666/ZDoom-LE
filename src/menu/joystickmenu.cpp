@@ -374,6 +374,8 @@ void UpdateJoystickMenu(IJoystickConfig *selected)
 		#ifdef _WIN32
 			it = new FOptionMenuItemOption("Enable DirectInput controllers", "joy_dinput", "YesNo", NULL, false);
 			opt->mItems.Push(it);
+			it = new FOptionMenuItemOption("Enable XInput controllers", "joy_xinput", "YesNo", NULL, false);
+			opt->mItems.Push(it);
 			it = new FOptionMenuItemOption("Enable raw PlayStation 2 adapters", "joy_ps2raw", "YesNo", NULL, false);
 			opt->mItems.Push(it);
 		#endif
