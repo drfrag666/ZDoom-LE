@@ -57,7 +57,7 @@ struct particle_t
 	fixed_t	x,y,z;
 	fixed_t velx,vely,velz;
 	fixed_t accx,accy,accz;
-	BYTE	ttl;
+	short	ttl;
 	BYTE	trans;
 	WORD	size;
 	BYTE	bright:1;
