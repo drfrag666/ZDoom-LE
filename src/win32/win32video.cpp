@@ -137,8 +137,6 @@ CUSTOM_CVAR (Bool, vid_forceddraw, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 	{
 		if (self)
 			Printf("Forcing DirectDraw. ");
-		else
-			Printf("Enabling Direct3D if available. ");
 		Printf("You must restart " GAMENAME " to switch the renderer.\n");
 	}
 	currentbackend=self;
