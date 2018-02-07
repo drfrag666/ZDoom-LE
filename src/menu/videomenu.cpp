@@ -82,7 +82,6 @@ int testingmode;		// Holds time to revert to old mode
 int OldWidth, OldHeight, OldBits;
 static FIntCVar DummyDepthCvar (NULL, 0, 0);
 static BYTE BitTranslate[32];
-bool setdefaultneeded;
 
 CUSTOM_CVAR (Int, menu_screenratios, -1, CVAR_ARCHIVE)
 {
@@ -292,7 +291,6 @@ void M_RestoreMode ()
 	NewBits = OldBits;
 	setmodeneeded = true;
 	testingmode = 0;
-	setdefaultneeded=false;
 	SetModesMenu (OldWidth, OldHeight, OldBits);
 }
 
@@ -303,7 +301,6 @@ void M_SetDefaultMode ()
 	vid_defheight = SCREENHEIGHT;
 	vid_defbits = DisplayBits;
 	testingmode = 0;
-	setdefaultneeded=false;
 	SetModesMenu (SCREENWIDTH, SCREENHEIGHT, DisplayBits);
 }
 
@@ -394,7 +391,6 @@ void M_SetVideoMode()
 	else
 	{
 		testingmode = 1;
-		setdefaultneeded=true;
 		setmodeneeded = true;
 		NewBits = BitTranslate[DummyDepthCvar];
 	}

@@ -160,7 +160,6 @@ extern bool gameisdead;
 extern bool demorecording;
 extern bool M_DemoNoPlay;	// [RH] if true, then skip any demos in the loop
 extern bool insave;
-extern bool setdefaultneeded;
 
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
@@ -256,7 +255,7 @@ void D_ProcessEvents (void)
 	// [RH] If testing mode, do not accept input until test is over
 	if (testingmode)
 	{
-		if (setdefaultneeded) // testingmode == 1
+		if (testingmode == 1)
 		{
 			M_SetDefaultMode ();
 		}
