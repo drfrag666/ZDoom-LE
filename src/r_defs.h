@@ -161,8 +161,9 @@ struct FUDMFKey
 
 class FUDMFKeys : public TArray<FUDMFKey>
 {
-	bool mSorted = false;
+	bool mSorted;// = false;
 public:
+	FUDMFKeys() : mSorted(false) {};
 	void Sort();
 	FUDMFKey *Find(FName key);
 };
