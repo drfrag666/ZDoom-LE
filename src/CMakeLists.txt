@@ -131,16 +131,6 @@ if( WIN32 )
 		endif( NOT DDRAW_INCLUDE_DIR )
 	endif( NOT USE_D3D9 )
 		
-	find_path( XINPUT_INCLUDE_DIR xinput.h
-		PATHS ENV DXSDK_DIR
-		PATH_SUFFIXES Include )
-	if( NOT XINPUT_INCLUDE_DIR )
-		message( WARNING "Could not find xinput.h. XInput will be disabled." )
-		add_definitions( -DNO_XINPUT )
-	else( NOT XINPUT_INCLUDE_DIR )
-		include_directories( ${XINPUT_INCLUDE_DIR} )
-	endif( NOT XINPUT_INCLUDE_DIR )
-
 	find_library( DX_dxguid_LIBRARY dxguid
 		PATHS ENV DXSDK_DIR
 		PATH_SUFFIXES Lib Lib/${XBITS} )
@@ -607,7 +597,6 @@ if( NOT USE_D3D9 )
 		win32/i_mouse.cpp
 		win32/i_dijoy.cpp
 		win32/i_rawps2.cpp
-		win32/i_xinput.cpp
 		win32/i_main.cpp
 		win32/i_movie.cpp
 		win32/i_system.cpp
@@ -628,7 +617,6 @@ else ( NOT USE_D3D9 )
 		win32/i_mouse.cpp
 		win32/i_dijoy.cpp
 		win32/i_rawps2.cpp
-		win32/i_xinput.cpp
 		win32/i_main.cpp
 		win32/i_movie.cpp
 		win32/i_system.cpp
