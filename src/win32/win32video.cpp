@@ -424,48 +424,8 @@ void Win32Video::BlankForGDI ()
 
 void Win32Video::DumpAdapters()
 {
-
 #ifdef USE_D3D9
-/*	if (D3D == NULL)
-	{
-		Printf("Multi-monitor support requires Direct3D.\n");
-		return;
-	}
-
-	UINT num_adapters = D3D->GetAdapterCount();
-
-	for (UINT i = 0; i < num_adapters; ++i)
-	{
-		D3DADAPTER_IDENTIFIER9 ai;
-		char moreinfo[64] = "";
-
-		if (FAILED(D3D->GetAdapterIdentifier(i, 0, &ai)))
-		{
-			continue;
-		}
-		// Strip trailing whitespace from adapter description.
-		for (char *p = ai.Description + strlen(ai.Description) - 1;
-			 p >= ai.Description && isspace(*p);
-			 --p)
-		{
-			*p = '\0';
-		}
-		HMONITOR hm = D3D->GetAdapterMonitor(i);
-		MONITORINFOEX mi;
-		mi.cbSize = sizeof(mi);
-		if (GetMonitorInfo(hm, &mi))
-		{
-			mysnprintf(moreinfo, countof(moreinfo), " [%ldx%ld @ (%ld,%ld)]%s",
-				mi.rcMonitor.right - mi.rcMonitor.left,
-				mi.rcMonitor.bottom - mi.rcMonitor.top,
-				mi.rcMonitor.left, mi.rcMonitor.top,
-				mi.dwFlags & MONITORINFOF_PRIMARY ? " (Primary)" : "");
-		}
-		Printf("%s%u. %s%s\n",
-			i == m_Adapter ? TEXTCOLOR_BOLD : "",
-			i + 1, ai.Description, moreinfo);
-	}
-*/	Printf("Display adapters information not available.\n");
+	Printf("Display adapters information not available.\n");
 	return;
 #else
 	Printf("Multi-monitor support requires Direct3D.\n");

@@ -23,8 +23,6 @@
 #include "version.h"	// for GAMENAME
 
 #if defined(_WIN32)
-/*
-typedef HRESULT (WINAPI *GKFP)(REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR *);
 
 //===========================================================================
 //
@@ -35,35 +33,6 @@ typedef HRESULT (WINAPI *GKFP)(REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR *);
 //
 //===========================================================================
 
-bool UseKnownFolders()
-{
-	// Cache this value so the semantics don't change during a single run
-	// of the program. (e.g. Somebody could add write access while the
-	// program is running.)
-	static INTBOOL iswritable = -1;
-	FString testpath;
-	HANDLE file;
-
-	if (iswritable >= 0)
-	{
-		return !iswritable;
-	}
-	testpath << progdir << "writest";
-	file = CreateFile(testpath, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-		CREATE_ALWAYS,
-		FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
-	if (file != INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(file);
-		Printf("Using program directory for storage\n");
-		iswritable = true;
-		return false;
-	}
-	Printf("Using known folders for storage\n");
-	iswritable = false;
-	return true;
-}
-
 //===========================================================================
 //
 // GetKnownFolder
@@ -73,64 +42,6 @@ bool UseKnownFolders()
 //
 //===========================================================================
 
-bool GetKnownFolder(int shell_folder, REFKNOWNFOLDERID known_folder, bool create, FString &path)
-{
-	static GKFP SHGetKnownFolderPath = NULL;
-	static bool tested = false;
-
-	if (!tested)
-	{
-		tested = true;
-		HMODULE shell32 = GetModuleHandle("shell32.dll");
-		if (shell32 != NULL)
-		{
-			SHGetKnownFolderPath = (GKFP)GetProcAddress(shell32, "SHGetKnownFolderPath");
-		}
-	}
-
-	char pathstr[MAX_PATH];
-
-	// SHGetKnownFolderPath knows about more folders than SHGetFolderPath, but is
-	// new to Vista, hence the reason we support both.
-	if (SHGetKnownFolderPath == NULL)
-	{
-		if (shell_folder < 0)
-		{ // Not supported by SHGetFolderPath
-			return false;
-		}
-		if (create)
-		{
-			shell_folder |= CSIDL_FLAG_CREATE;
-		}
-		if (FAILED(SHGetFolderPathA(NULL, shell_folder, NULL, 0, pathstr)))
-		{
-			return false;
-		}
-		path = pathstr;
-		return true;
-	}
-	else
-	{
-		PWSTR wpath;
-		if (FAILED(SHGetKnownFolderPath(known_folder, create ? KF_FLAG_CREATE : 0, NULL, &wpath)))
-		{
-			return false;
-		}
-		// FIXME: Support Unicode, at least for filenames. This function
-		// has no MBCS equivalent, so we have to convert it since we don't
-		// support Unicode. :(
-		bool converted = false;
-		if (WideCharToMultiByte(GetACP(), WC_NO_BEST_FIT_CHARS, wpath, -1,
-			pathstr, countof(pathstr), NULL, NULL) > 0)
-		{
-			path = pathstr;
-			converted = true;
-		}
-		CoTaskMemFree(wpath);
-		return converted;
-	}
-}
-*/
 //===========================================================================
 //
 // M_GetCachePath													Windows
@@ -143,10 +54,7 @@ FString M_GetCachePath(bool create)
 {
 	FString path;
 
-//	if (!GetKnownFolder(CSIDL_LOCAL_APPDATA, FOLDERID_LocalAppData, create, path))
-//	{ // Failed (e.g. On Win9x): use program directory
-		path = progdir;
-//	}
+	path = progdir;
 	// Don't use GAME_DIR and such so that ZDoom and its child ports can
 	// share the node cache.
 	path += "/zdoom/cache";
@@ -203,14 +111,7 @@ FString M_GetConfigPath(bool for_reading)
 	HRESULT hr;
 
 	// Construct a user-specific config name
-/*	if (UseKnownFolders() && GetKnownFolder(CSIDL_APPDATA, FOLDERID_RoamingAppData, true, path))
-	{
-		path += "/" GAME_DIR;
-		CreatePath(path);
-		path += "/" GAMENAMELOWERCASE ".ini";
-	}
-	else
-	{*/ // construct "$PROGDIR/zdoom-$USER.ini"
+	// construct "$PROGDIR/zdoom-$USER.ini"
 	if (OSPlatform == os_Win2k)
 	{
 		TCHAR uname[UNLEN+1];
@@ -271,24 +172,7 @@ static const GUID MyFOLDERID_Screenshots = { 0xb7bede81, 0xdf94, 0x4682, 0xa7, 0
 FString M_GetScreenshotsPath()
 {
 	FString path;
-/*
-	if (!UseKnownFolders())
-	{
-		return progdir;
-	}
-	else if (GetKnownFolder(-1, MyFOLDERID_Screenshots, true, path))
-	{
-		path << "/" GAMENAME;
-	}
-	else if (GetKnownFolder(CSIDL_MYPICTURES, FOLDERID_Pictures, true, path))
-	{
-		path << "/Screenshots/" GAMENAME;
-	}
-	else
-	{
-		return progdir;
-	}
-	CreatePath(path);*/
+
 	path << progdir << "Screenshots/";
 	return path;
 }
@@ -304,28 +188,8 @@ FString M_GetScreenshotsPath()
 FString M_GetSavegamesPath()
 {
 	FString path;
-/*
-	if (!UseKnownFolders())
-	{
-		return progdir;
-	}
-	// Try standard Saved Games folder
-	else if (GetKnownFolder(-1, FOLDERID_SavedGames, true, path))
-	{
-		path << "/" GAMENAME;
-	}
-	// Try defacto My Documents/My Games folder
-	else if (GetKnownFolder(CSIDL_PERSONAL, FOLDERID_Documents, true, path))
-	{
-		// I assume since this isn't a standard folder, it doesn't have
-		// a localized name either.
-		path << "/My Games/" GAMENAME;
-		CreatePath(path);
-	}
-	else
-	{*/
-		path = progdir;
-//	}
+
+	path = progdir;
 	return path;
 }
 
