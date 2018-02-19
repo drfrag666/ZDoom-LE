@@ -5167,6 +5167,11 @@ void P_DoCrunch(AActor *thing, FChangePosition *cpos)
 						mo->Translation = TRANSLATION(TRANSLATION_Blood, bloodcolor.a);
 					}
 
+					if (mo->flags5 & MF5_PUFFGETSOWNER)
+					{
+						mo->target = thing;
+					}
+
 					if (!(cl_bloodtype <= 1)) mo->renderflags |= RF_INVISIBLE;
 				}
 
