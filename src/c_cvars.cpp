@@ -1573,6 +1573,11 @@ static bool IsUnsafe(const FBaseCVar *const var)
 
 void FBaseCVar::CmdSet (const char *newval)
 {
+	if (IsUnsafe(this))
+	{
+		return;
+	}
+
 	UCVarValue val;
 
 	// Casting away the const is safe in this case.
