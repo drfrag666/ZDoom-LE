@@ -93,18 +93,21 @@ void I_BuildALDeviceList(FOptionValues *opt)
     opt->mValues[0].Text = "Default";
 
 #ifndef NO_OPENAL
-	const ALCchar *names = (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") ?
-		alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER) :
-		alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-	if (!names)
-		Printf("Failed to get device list: %s\n", alcGetString(NULL, alcGetError(NULL)));
-	else while (*names)
+	if (IsOpenALPresent())
 	{
-		unsigned int i = opt->mValues.Reserve(1);
-		opt->mValues[i].TextValue = names;
-		opt->mValues[i].Text = names;
+		const ALCchar *names = (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") ?
+			alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER) :
+			alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+		if (!names)
+			Printf("Failed to get device list: %s\n", alcGetString(NULL, alcGetError(NULL)));
+		else while (*names)
+		{
+			unsigned int i = opt->mValues.Reserve(1);
+			opt->mValues[i].TextValue = names;
+			opt->mValues[i].Text = names;
 
-		names += strlen(names) + 1;
+			names += strlen(names) + 1;
+		}
 	}
 #endif
 }
@@ -660,24 +663,8 @@ OpenALSoundRenderer::OpenALSoundRenderer()
 
     Printf("I_InitSound: Initializing OpenAL\n");
 
-//	Device = InitDevice();
-//	if (Device == NULL) return;
-    if(strcmp(snd_aldevice, "Default") != 0)
-    {
-        Device = alcOpenDevice(*snd_aldevice);
-        if(!Device)
-            Printf(TEXTCOLOR_BLUE" Failed to open device "TEXTCOLOR_BOLD"%s"TEXTCOLOR_BLUE". Trying default.\n", *snd_aldevice);
-    }
-
-    if(!Device)
-    {
-        Device = alcOpenDevice(NULL);
-        if(!Device)
-        {
-            Printf(TEXTCOLOR_RED" Could not open audio device\n");
-            return;
-        }
-    }
+	Device = InitDevice();
+	if (Device == NULL) return;
 
     const ALCchar *current = NULL;
     if(alcIsExtensionPresent(Device, "ALC_ENUMERATE_ALL_EXT"))
