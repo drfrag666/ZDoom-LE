@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <wctype.h>
 
 #include "v_text.h"
 
@@ -369,7 +370,7 @@ FBrokenLines *V_BreakLines (FFont *font, int maxwidth, const BYTE *string, bool 
 			continue;
 		}
 
-		if (isspace(c)) 
+		if (iswspace(c)) 
 		{
 			if (!lastWasSpace)
 			{
@@ -402,12 +403,12 @@ FBrokenLines *V_BreakLines (FFont *font, int maxwidth, const BYTE *string, bool 
 			start = space;
 			space = NULL;
 
-			while (*start && isspace (*start) && *start != '\n')
+			while (*start && iswspace (*start) && *start != '\n')
 				start++;
 			if (*start == '\n')
 				start++;
 			else
-				while (*start && isspace (*start))
+				while (*start && iswspace (*start))
 					start++;
 			string = start;
 		}
@@ -425,7 +426,7 @@ FBrokenLines *V_BreakLines (FFont *font, int maxwidth, const BYTE *string, bool 
 		while (s < string)
 		{
 			// If there is any non-white space in the remainder of the string, add it.
-			if (!isspace (*s++))
+			if (!iswspace (*s++))
 			{
 				breakit (&lines[i++], font, start, string, linecolor);
 				break;
