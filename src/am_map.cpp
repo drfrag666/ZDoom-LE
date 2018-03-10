@@ -113,6 +113,7 @@ CVAR (Color, am_lockedcolor,		0x007800,	CVAR_ARCHIVE);
 CVAR (Color, am_intralevelcolor,	0x0000ff,	CVAR_ARCHIVE);
 CVAR (Color, am_interlevelcolor,	0xff0000,	CVAR_ARCHIVE);
 CVAR (Color, am_secretsectorcolor,	0xff00ff,	CVAR_ARCHIVE);
+CVAR (Color, am_unexploredsecretcolor,	0xff00ff,	CVAR_ARCHIVE);
 CVAR (Color, am_thingcolor_friend,	0xfcfcfc,	CVAR_ARCHIVE);
 CVAR (Color, am_thingcolor_monster,	0xfcfcfc,	CVAR_ARCHIVE);
 CVAR (Color, am_thingcolor_ncmonster,	0xfcfcfc,	CVAR_ARCHIVE);
@@ -132,6 +133,7 @@ CVAR (Color, am_ovunseencolor,		0x00226e,	CVAR_ARCHIVE);
 CVAR (Color, am_ovtelecolor,		0xffff00,	CVAR_ARCHIVE);
 CVAR (Color, am_ovinterlevelcolor,	0xffff00,	CVAR_ARCHIVE);
 CVAR (Color, am_ovsecretsectorcolor,0x00ffff,	CVAR_ARCHIVE);
+CVAR (Color, am_ovunexploredsecretcolor,0x00ffff,	CVAR_ARCHIVE);
 CVAR (Color, am_ovthingcolor,		0xe88800,	CVAR_ARCHIVE);
 CVAR (Color, am_ovthingcolor_friend,	0xe88800,	CVAR_ARCHIVE);
 CVAR (Color, am_ovthingcolor_monster,	0xe88800,	CVAR_ARCHIVE);
@@ -203,6 +205,7 @@ static const char *ColorNames[] = {
 		"IntraTeleportColor", 
 		"InterTeleportColor",
 		"SecretSectorColor",
+		"UnexploredSecretColor",
 		"AlmostBackgroundColor",
 		NULL
 };
@@ -233,6 +236,7 @@ struct AMColorset
 		IntraTeleportColor, 
 		InterTeleportColor,
 		SecretSectorColor,
+		UnexploredSecretColor,
 		AlmostBackgroundColor,
 		AM_NUM_COLORS
 	};
@@ -332,7 +336,8 @@ static FColorCVar *cv_standard[] = {
 	&am_lockedcolor,
 	&am_intralevelcolor,
 	&am_interlevelcolor,
-	&am_secretsectorcolor
+	&am_secretsectorcolor,
+	&am_unexploredsecretcolor
 };
 
 static FColorCVar *cv_overlay[] = {
@@ -357,7 +362,8 @@ static FColorCVar *cv_overlay[] = {
 	&am_ovlockedcolor,
 	&am_ovtelecolor,
 	&am_ovinterlevelcolor,
-	&am_ovsecretsectorcolor
+	&am_ovsecretsectorcolor,
+	&am_ovunexploredsecretcolor
 };
 
 CCMD(am_restorecolors)
@@ -399,6 +405,7 @@ static unsigned char DoomColors[]= {
 	NOT_USED,		// intrateleport
 	NOT_USED,		// interteleport
 	NOT_USED,		// secretsector
+	NOT_USED,		// unexploredsecretsector
 	0x10,0x10,0x10,	// almostbackground
 };
 
@@ -425,6 +432,7 @@ static unsigned char StrifeColors[]= {
 	NOT_USED,		// intrateleport
 	NOT_USED,		// interteleport
 	NOT_USED,		// secretsector
+	NOT_USED,		// unexploredsecretsector
 	0x10,0x10,0x10,	// almostbackground
 };
 
@@ -451,6 +459,7 @@ static unsigned char RavenColors[]= {
 	NOT_USED,		// intrateleport
 	NOT_USED,		// interteleport
 	NOT_USED,		// secretsector
+	NOT_USED,		// unexploredsecretsector
 	0x10,0x10,0x10,	// almostbackground
 };
 
@@ -2070,7 +2079,7 @@ void AM_drawSubsectors()
 //
 //=============================================================================
 
-static bool AM_CheckSecret(line_t *line)
+static int AM_CheckSecret(line_t *line)
 {
 	if (AMColors.isValid(AMColors.SecretSectorColor))
 	{
@@ -2078,20 +2087,20 @@ static bool AM_CheckSecret(line_t *line)
 		{
 			if (line->frontsector->wasSecret())
 			{
-				if (am_map_secrets!=0 && !line->frontsector->isSecret()) return true;
-				if (am_map_secrets==2 && !(line->flags & ML_SECRET)) return true;
+				if (am_map_secrets != 0 && !line->frontsector->isSecret()) return 1;
+				if (am_map_secrets == 2 && !(line->flags & ML_SECRET)) return 2;
 			}
 		}
 		if (line->backsector != NULL)
 		{
 			if (line->backsector->wasSecret())
 			{
-				if (am_map_secrets!=0 && !line->backsector->isSecret()) return true;
-				if (am_map_secrets==2 && !(line->flags & ML_SECRET)) return true;
+				if (am_map_secrets != 0 && !line->backsector->isSecret()) return 1;
+				if (am_map_secrets == 2 && !(line->flags & ML_SECRET)) return 2;
 			}
 		}
 	}
-	return false;
+	return 0;
 }
 
 
@@ -2413,10 +2422,14 @@ void AM_drawWalls (bool allmap)
 				}
 			}
 
-			if (AM_CheckSecret(&lines[i]))
+			if (AM_CheckSecret(&lines[i]) == 1)
 			{
 				// map secret sectors like Boom
 				AM_drawMline(&l, AMColors.SecretSectorColor);
+			}
+			else if (AM_CheckSecret(&lines[i]) == 2)
+			{
+				AM_drawMline(&l, AMColors.UnexploredSecretColor);
 			}
 			else if (lines[i].flags & ML_SECRET)
 			{ // secret door
