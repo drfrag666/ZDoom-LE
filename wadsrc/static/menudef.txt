@@ -1076,6 +1076,7 @@ OptionMenu MapColorMenu
 	ColorPicker "Teleporter to the same map",				"am_intralevelcolor"	
 	ColorPicker "Teleporter to a different map",			"am_interlevelcolor"	
 	ColorPicker "Secret sector",							"am_secretsectorcolor"	
+	ColorPicker "Unexplored secret",						"am_unexploredsecretcolor"	
 	ColorPicker "Special trigger lines",					"am_specialwallcolor"
 	StaticText " "
 	StaticText "Cheat Mode", 1
