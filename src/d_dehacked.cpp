@@ -2472,9 +2472,9 @@ static bool DoDehPatch()
 		}
 		if (!cont || dversion == -1 || pversion == -1)
 		{
+			Printf (PRINT_BOLD, "\"%s\" is not a DeHackEd patch file\n", PatchName);
 			delete[] PatchName;
 			delete[] PatchFile;
-			Printf (PRINT_BOLD, "\"%s\" is not a DeHackEd patch file\n", PatchFile);
 			return false;
 		}
 	}
