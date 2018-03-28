@@ -410,14 +410,14 @@ public:
 #endif
 
 	// The original size of the framebuffer as selected in the video menu.
-	int VideoWidth = 0;
-	int VideoHeight = 0;
+	int VideoWidth; // = 0;
+	int VideoHeight; // = 0;
 
 protected:
 	void DrawRateStuff ();
 	void CopyFromBuff (BYTE *src, int srcPitch, int width, int height, BYTE *dest);
 
-	DFrameBuffer () {}
+	DFrameBuffer () : VideoWidth (0), VideoHeight (0) {}
 
 private:
 	uint32 LastMS, LastSec, FrameCount, LastCount, LastTic;
