@@ -594,6 +594,7 @@ void DLoadSaveMenu::Drawer ()
 	if (SaveComment != NULL)
 	{
 		int maxlines = screen->GetHeight()>400?10:screen->GetHeight()>240?7:screen->GetHeight()>200?8:5;
+		if (SmallFont->GetHeight() > 9) maxlines--; // not Doom
 		// I'm not sure why SaveComment would go NULL in this loop, but I got
 		// a crash report where it was NULL when i reached 1, so now I check
 		// for that.
