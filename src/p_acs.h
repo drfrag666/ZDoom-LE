@@ -110,8 +110,10 @@ private:
 	{
 		FString Str;
 		unsigned int Hash;
-		unsigned int Next;
+		unsigned int Next; // = FREE_ENTRY;
 		unsigned int LockCount;
+
+		PoolEntry () : Next (FREE_ENTRY) {}
 	};
 	TArray<PoolEntry> Pool;
 	unsigned int PoolBuckets[NUM_BUCKETS];
