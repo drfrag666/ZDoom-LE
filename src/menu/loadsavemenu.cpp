@@ -180,14 +180,16 @@ int DLoadSaveMenu::InsertSaveNode (FSaveGameNode *node)
 	}
 	else
 	{	// Add node at top of list
-		unsigned int i;
-		for(i = 0; i < SaveGames.Size(); i++)
+		unsigned int i = 0;
+		if (!strstr(node->Filename.GetChars(),"auto"))
 		{
-			if (//SaveGames[i]->bOldVersion ||
-				//stricmp (node->Title, SaveGames[i]->Title) <= 0)
-				stricmp (node->Filename, SaveGames[i]->Filename) <= 0)
+			for (i = 0; i < SaveGames.Size(); i++)
 			{
-				break;
+				//if (SaveGames[i]->bOldVersion || stricmp (node->Title, SaveGames[i]->Title) <= 0)
+				if (!strstr(SaveGames[i]->Filename.GetChars(),"auto") && stricmp (node->Filename, SaveGames[i]->Filename) >= 0)
+				{
+					break;
+				}
 			}
 		}
 		SaveGames.Insert(i, node);
