@@ -196,6 +196,17 @@ skill hard
 	Key = "u"
 }
 
+skill extreme_zdle
+{
+	AmmoFactor = 0.5
+	DamageFactor = 2
+	DisableCheats
+	SpawnFilter = Hard
+	PicName = "M_EXTR"
+	Name = "$SKILL_EXTREME"
+	MustConfirm
+}
+
 skill nightmare
 {
 	AmmoFactor = 2
