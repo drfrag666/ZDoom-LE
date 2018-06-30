@@ -2350,16 +2350,17 @@ void Net_DoCommand (int type, BYTE **stream, int player)
 								spawned->flags &= ~MF_FRIENDLY;
 								spawned->health = spawned->SpawnHealth();
 							}
-						}
-						if (type >= DEM_SUMMON2 && type <= DEM_SUMMONFOE2)
-						{
-							spawned->angle = source->angle - (ANGLE_1 * angle);
-							spawned->tid = tid;
-							spawned->special = special;
-							for(i = 0; i < 5; i++) {
-								spawned->args[i] = args[i];
+
+							if (type >= DEM_SUMMON2 && type <= DEM_SUMMONFOE2)
+							{
+								spawned->angle = source->angle - (ANGLE_1 * angle);
+								spawned->tid = tid;
+								spawned->special = special;
+								for(i = 0; i < 5; i++) {
+									spawned->args[i] = args[i];
+								}
+								if(tid) spawned->AddToHash();
 							}
-							if(tid) spawned->AddToHash();
 						}
 					}
 				}
