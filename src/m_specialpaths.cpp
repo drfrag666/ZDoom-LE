@@ -12,7 +12,6 @@
 #include "cmdlib.h"
 #include "m_misc.h"
 #include "i_system.h"
-#include <direct.h>
 
 #if !defined(__APPLE__) && !defined(_WIN32)
 #include <sys/stat.h>
