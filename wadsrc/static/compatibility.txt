@@ -846,3 +846,9 @@ CA3773ED313E8899311F3DD0CA195A68 // e3m6
 {
 	shorttex
 }
+
+5B8689912D21E91D899C61BBBDD44D7C // altar of evil.wad map01
+{
+	// Missing teleport destination on easy skill
+	setthingskills 115 31
+}
