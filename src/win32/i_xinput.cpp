@@ -734,7 +734,7 @@ void FXInputManager::GetDevices(TArray<IJoystickConfig *> &sticks)
 
 bool FXInputManager::WndProcHook(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT *result)
 {
-	if (nullptr != InputEnable && message == WM_ACTIVATE)
+	if (NULL != InputEnable && message == WM_ACTIVATE)
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
 		{
