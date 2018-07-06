@@ -27,6 +27,10 @@
 
 // MACROS ------------------------------------------------------------------
 
+#ifndef XUSER_MAX_COUNT
+#define XUSER_MAX_COUNT                 4
+#endif
+
 // TYPES -------------------------------------------------------------------
 
 typedef DWORD (WINAPI *XInputGetStateType)(DWORD index, XINPUT_STATE *state);
