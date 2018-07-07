@@ -15,12 +15,16 @@ monospacefonts true, "0";
 statusbar fullscreen, fullscreenoffsets // ZDoom HUD
 {
 	//health
-	drawimage "MEDIA0", 20, -2, centerbottom;
-	drawnumber 2147483647, HUDFONT_DOOM, untranslated, health, drawshadow, 82, -20;
+	//drawimage "MEDIA0", 20, -2, centerbottom;
+	//drawnumber 2147483647, HUDFONT_DOOM, untranslated, health, drawshadow, 82, -20;
+	drawmugshot "STF", 5, 3, -34;
+	drawnumber 2147483647, HUDFONT_DOOM, untranslated, health, drawshadow, 82, -25;
 
 	//armor
-	drawimage armoricon, 20, -24, centerbottom;
-	drawnumber 2147483647, HUDFONT_DOOM, untranslated, armor, drawshadow, whennotzero, 82, -39;
+	//drawimage armoricon, 20, -24, centerbottom;
+	//drawnumber 2147483647, HUDFONT_DOOM, untranslated, armor, drawshadow, whennotzero, 82, -39;
+	drawimage armoricon, 20, -35, centerbottom;
+	drawnumber 2147483647, HUDFONT_DOOM, untranslated, armor, drawshadow, whennotzero, 82, -51;
 
 	//ammo
 	drawimage ammoicon1, -14, -4, centerbottom;
