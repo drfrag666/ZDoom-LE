@@ -354,7 +354,7 @@ F481922F4881F74760F3C0437FD5EDD0 // map03
 	// make it impossible to open door to 1-way bridge before getting red key
 	setsectortag 35 0 // existing tag must be cleared before new one can be set
 	setsectortag 35 15
-	setactivation 605 1 // SPAC_PCross
+	setactivation 605 1 // SPAC_Cross
 	setactivation 606 1
 	setactivation 607 1
 	setactivation 608 1
@@ -463,7 +463,7 @@ D99AD22FF21A41B4EECDB3A7C803D75E // TNT: Evilution map32
 	setsectortag 197 0
 	setsectortag 197 8
 	setlinespecial 1279 Floor_LowerToLowest 8 32 0 0 0
-	setactivation 1240 1 // SPAC_PCross
+	setactivation 1240 1 // SPAC_Cross
 	setlinespecial 1240 Floor_LowerToLowest 38 32 0 0 0
 }
 
