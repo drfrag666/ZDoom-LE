@@ -51,6 +51,7 @@ ACTOR ZRock4
 {
 	Radius 20
 	Height 16
+	+SOLID
 	States
 	{
 	Spawn:
