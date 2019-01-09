@@ -2270,7 +2270,7 @@ void R_DetailDouble ()
 		}
 		break;
 
-	case 4:		// x-quad and y-double
+	case 5:		// x-quad and y-double
 		{
 			int rowsize = viewwidth;
 			int realpitch = RenderTarget->GetPitch();
@@ -2297,7 +2297,7 @@ void R_DetailDouble ()
 			}
 		}
 		break;
-	case 5:		// x-triple and y-double
+	case 4:		// x-triple and y-double
 		{
 			int rowsize = viewwidth;
 			int realpitch = RenderTarget->GetPitch();
@@ -2305,17 +2305,11 @@ void R_DetailDouble ()
 			int y,x;
 			BYTE *linefrom, *lineto;
 			BYTE c;
-			int pitchadj = CPU.bIsAMD ? CPU.DataL1LineSize : MAX(0, CPU.DataL1LineSize - 8);
-			int offset = SCREENWIDTH > 640 ? pitchadj : 0;
 
-			if (screenblocks <= 9)
-			{
-				offset = offset + (10-screenblocks)*(SCREENWIDTH/10) + SCREENWIDTH%10;
-			}
 			linefrom = dc_destorg;
-			lineto = linefrom - viewwidth;
-			for (y = 0; y < viewheight; ++y)
+			for (y = viewheight; y != 0; --y, linefrom += pitch)
 			{
+				lineto = linefrom - viewwidth;
 				for (x = 0; x < rowsize-3; x=x+3)
 				{
 					c = linefrom[x];
@@ -2327,20 +2321,7 @@ void R_DetailDouble ()
 					lineto[x*2+4] = c;
 					lineto[x*2+5] = c;
 				}
-				x = rowsize-1;
-				if (viewwidth >= 200)
-				{
-					c = linefrom[x-2];
-					lineto[x*2-2] = c;
-					lineto[x*2-1] = c;
-				}
-				c = linefrom[x-1];
-				lineto[x*2] = c;
-				lineto[x*2+1] = c;
 				memcpy (lineto+realpitch, lineto, rowsize*2);
-
-				linefrom += pitch;
-				lineto = linefrom - viewwidth*3 - offset;
 			}
 		}
 		break;
@@ -2352,17 +2333,11 @@ void R_DetailDouble ()
 			int y,x;
 			BYTE *linefrom, *lineto;
 			BYTE c;
-			int pitchadj = CPU.bIsAMD ? CPU.DataL1LineSize : MAX(0, CPU.DataL1LineSize - 8);
-			int offset = SCREENWIDTH > 640 ? pitchadj*2 : 0;
 
-			if (screenblocks <= 9)
-			{
-				offset = offset + 2*(10-screenblocks)*(SCREENWIDTH/10) + 2*(SCREENWIDTH%10);
-			}
 			linefrom = dc_destorg;
-			lineto = linefrom - viewwidth;
-			for (y = 0; y < viewheight/2; ++y)
+			for (y = viewheight/2; y != 0; --y, linefrom += pitch*2)
 			{
+				lineto = linefrom - viewwidth;
 				for (x = 0; x < rowsize; x = x+2)
 				{
 					c = linefrom[x];
@@ -2376,25 +2351,7 @@ void R_DetailDouble ()
 					lineto[x*2+realpitch+3] = c;
 				}
 				memcpy (lineto+realpitch*2, lineto, rowsize*2);
-				memcpy (lineto+realpitch*3, lineto, rowsize*2);
-				
-				linefrom += pitch*2;
-				lineto = linefrom - viewwidth*5 - offset;
-			}
-			linefrom -= pitch*2;
-			lineto = linefrom - viewwidth*5 - offset;
-			linefrom += pitch;
-			for (x = 0; x < rowsize; x = x+2)
-			{
-				c = linefrom[x];
-				lineto[x*2+realpitch*4] = c;
-				lineto[x*2+realpitch*4+1] = c;
-				lineto[x*2+realpitch*4+2] = c;
-				lineto[x*2+realpitch*4+3] = c;
-				lineto[x*2+realpitch*5] = c;
-				lineto[x*2+realpitch*5+1] = c;
-				lineto[x*2+realpitch*5+2] = c;
-				lineto[x*2+realpitch*5+3] = c;
+				memcpy (lineto+realpitch*3, lineto, rowsize*2);				
 			}
 		}
 		break;
