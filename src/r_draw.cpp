@@ -2351,7 +2351,7 @@ void R_DetailDouble ()
 					lineto[x*2+realpitch+3] = c;
 				}
 				memcpy (lineto+realpitch*2, lineto, rowsize*2);
-				memcpy (lineto+realpitch*3, lineto, rowsize*2);				
+				memcpy (lineto+realpitch*3, lineto, rowsize*2);
 			}
 		}
 		break;
