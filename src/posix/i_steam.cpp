@@ -42,6 +42,7 @@
 #include "d_main.h"
 #include "zstring.h"
 #include "sc_man.h"
+#include "cmdlib.h"
 
 static void PSR_FindEndBlock(FScanner &sc)
 {
